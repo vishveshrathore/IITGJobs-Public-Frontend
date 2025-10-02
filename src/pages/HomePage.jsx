@@ -2,6 +2,7 @@ import Navbar from "../components/Public/Landing Page/Navbar";
 import HeroBanner from "../components/Public/Landing Page/HeroBanner";
 import TrustedHR from "../components/Public/Landing Page/TrustedHR";
 import Footer from "../components/Public/Landing Page/Footer";
+import TrustedCompanies from "../components/Public/Landing Page/TrustedCompanies";
 
 const HomePage = () => {
 
@@ -10,6 +11,7 @@ const HomePage = () => {
       <Navbar />
       <HeroBanner />
       <TrustedHR />
+      <TrustedCompanies />
       <Footer />
 
     </div>

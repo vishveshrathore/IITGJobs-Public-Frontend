@@ -23,8 +23,8 @@ const TrustedHR = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-slate-950 to-slate-900 text-slate-100">
-      <main className="relative mx-auto max-w-6xl px-6 pt-20 pb-24">
+    <div className="w-full py-8">
+      <main className="relative mx-auto max-w-6xl px-6 pt-12 pb-12">
         {/* Badge */}
         <div className="flex justify-center">
           <span className="inline-flex items-center rounded-full bg-indigo-600/10 px-3 py-1 text-xs font-semibold text-indigo-300 ring-1 ring-inset ring-indigo-400/20">
