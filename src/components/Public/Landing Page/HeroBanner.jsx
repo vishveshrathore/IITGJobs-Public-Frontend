@@ -4,7 +4,7 @@ import bannerImage from '../../../assets/banner2.jpg';
 
 const LINES = [
   'IITG Indian Jobs Welcomes You',
-  'Attration Control Guaranteed',
+  'Attrition Control Guaranteed',
   'End to End Hiring Support Under very Special Model - PPM',
 ];
 
