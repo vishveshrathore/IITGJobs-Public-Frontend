@@ -329,7 +329,7 @@ const ContactForm = () => {
                     </div>
                     <div className="ml-4">
                       <h4 className="text-sm font-medium text-slate-300">Visit us</h4>
-                      <p className="mt-1 text-sm text-slate-400"> Madan Mahal, Shiv Hari Complex, Mahanadda, Nagpur Rd, near Gulzar Hotel<br />Jabalpur, Madhya Pradesh 482002</p>
+                      <p className="mt-1 text-sm text-slate-400"> IITGjobs.com Shiv Hari Complex besidde Hotel Gulzar Mahanadda Jabalpur - 482001</p>
                     </div>
                   </div>
                 </div>

@@ -77,8 +77,7 @@ const Footer = () => {
           <div className="flex flex-col gap-2">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Office</h4>
             <address className="not-italic text-xs">
-              Madan Mahal, Shiv Hari Complex, Mahanadda, Nagpur Rd, near Gulzar Hotel,
-              Jabalpur, Madhya Pradesh 482002
+              IITGjobs.com Shiv Hari Complex besidde Hotel Gulzar Mahanadda Jabalpur - 482001
             </address>
             <a href="https://maps.app.goo.gl/wPK7jdvnoLh4Yg4u8" target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:text-indigo-300 hover:underline">
               View on Google Maps
