@@ -26,6 +26,7 @@ const ConfidentialData = () => {
   const [tableError, setTableError] = useState("");
   const [rows, setRows] = useState([]);
   const [currentView, setCurrentView] = useState(null); // 'demo' | 'service' | null
+  const [showDates, setShowDates] = useState(false); // controls Date columns visibility
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -115,10 +116,11 @@ const ConfidentialData = () => {
     return null;
   };
 
-  const proceed = (path) => {
+  const proceed = (path, withDates = false) => {
     // determine view from path
     const view = path.includes('/client/demo') ? 'demo' : 'service';
     setCurrentView(view);
+    setShowDates(!!withDates);
     if (verified) {
       // Use current company if chosen, else try last company
       const lastKey = `public_access_last_company:${userEmail}`;
@@ -127,7 +129,7 @@ const ConfidentialData = () => {
         // Persist for next time and fetch table
         try { localStorage.setItem(lastKey, chosen); } catch (_) {}
         const comp = companies.find((c) => c._id === chosen);
-        const cname = comp?.companyName || comp?.name || '';
+        const cname = comp?.CompanyName || comp?.companyName || comp?.name || '';
         fetchData(view, chosen, cname);
         return;
       }
@@ -175,7 +177,7 @@ const ConfidentialData = () => {
         if (companyId) {
           // small delay so user can see success, then fetch data and close modal
           const comp = companies.find((c) => c._id === companyId);
-          const cname = comp?.companyName || comp?.name || '';
+          const cname = comp?.CompanyName || comp?.companyName || comp?.name || '';
           setTimeout(() => {
             const view = (targetPath || '').includes('/client/demo') ? 'demo' : (currentView || 'service');
             setCurrentView(view);
@@ -241,6 +243,14 @@ const ConfidentialData = () => {
                   <p className="mt-1 text-sm text-slate-400">Report of Last 24 hours</p>
                 </div>
               </button>
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={() => proceed('/client/demo', true)}
+                  className="px-3 py-1.5 text-xs rounded border border-blue-600 bg-blue-600 text-white hover:bg-blue-500"
+                >
+                  Get Report
+                </button>
+              </div>
             </motion.div>
 
             {/* Service Card */}
@@ -262,6 +272,14 @@ const ConfidentialData = () => {
                   <p className="mt-1 text-sm text-slate-400">Report of Last one week</p>
                 </div>
               </button>
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={() => proceed('/client/service', true)}
+                  className="px-3 py-1.5 text-xs rounded border border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-500"
+                >
+                  Get Report
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         </div>
@@ -281,7 +299,7 @@ const ConfidentialData = () => {
                 >
                   <option value="" disabled className="bg-slate-700">{companiesLoading ? 'Loading companies…' : 'Select a company'}</option>
                   {companies.map((c) => (
-                    <option key={c._id} value={c._id} className="bg-slate-700">{c.companyName || c.name || 'Unnamed Company'}</option>
+                    <option key={c._id} value={c._id} className="bg-slate-700">{c.CompanyName || c.companyName || c.name || 'Unnamed Company'}</option>
                   ))}
                 </select>
               </div>
@@ -330,7 +348,7 @@ const ConfidentialData = () => {
                   const lastKey = `public_access_last_company:${userEmail}`;
                   const chosen = companyId || localStorage.getItem(lastKey);
                   const comp = companies.find((c) => c._id === chosen);
-                  const cname = comp?.companyName || comp?.name || '';
+                  const cname = comp?.CompanyName || comp?.companyName || comp?.name || '';
                   if (chosen) fetchData(currentView, chosen, cname);
                 }}
                 className="rounded border border-slate-700 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700"
@@ -350,7 +368,7 @@ const ConfidentialData = () => {
                       <th className="px-4 py-3 text-gray-200">Designation</th>
                       <th className="px-4 py-3 text-gray-200">Location</th>
                       <th className="px-4 py-3 text-gray-200">Company</th>
-                      {(currentView === 'demo' || currentView === 'service') && (
+                      {showDates && (
                         <>
                           <th className="px-4 py-3 text-gray-200">Date</th>
                           <th className="px-4 py-3 text-gray-200">Date</th>
@@ -363,7 +381,7 @@ const ConfidentialData = () => {
                   <tbody>
                     {rows.length === 0 ? (
                       <tr>
-                        <td colSpan={(currentView === 'demo' || currentView === 'service') ? 8 : 4} className="px-4 py-4 text-center text-gray-500 bg-slate-800">
+                        <td colSpan={showDates ? 8 : 4} className="px-4 py-4 text-center text-gray-500 bg-slate-800">
                           No data available.
                         </td>
                       </tr>
@@ -379,7 +397,7 @@ const ConfidentialData = () => {
                           <td className="px-4 py-2 text-gray-300">{r.designation}</td>
                           <td className="px-4 py-2 text-gray-300">{r.location}</td>
                           <td className="px-4 py-2 text-gray-300">{r.company}</td>
-                          {(currentView === 'demo' || currentView === 'service') && (
+                          {showDates && (
                             <>
                               <td className="px-4 py-2 text-gray-300">{renderDate(r.date1)}</td>
                               <td className="px-4 py-2 text-gray-300">{renderDate(r.date2)}</td>

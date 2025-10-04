@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "../Landing Page/Footer";
 import Navbar from "../Landing Page/Navbar";
 import { BASE_URL } from "../../../config";
@@ -28,6 +28,11 @@ const GRADIENT_TEXT_STYLE = {
 const EmployerSignupPage = () => {
   const [values, setValues] = useState(initial);
   const [touched, setTouched] = useState({});
+  // Dependent dropdown state
+  const [industries, setIndustries] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [industryId, setIndustryId] = useState("");
+  const [companyId, setCompanyId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -46,9 +51,40 @@ const EmployerSignupPage = () => {
   const setField = (k, v) => setValues((s) => ({ ...s, [k]: v }));
   const onBlur = (k) => setTouched((t) => ({ ...t, [k]: true }));
 
-  // Validations
-  const nameValid = values.companyName.trim().length >= 2;
-  const industryValid = values.industryType.trim().length >= 2;
+  // Load industries on mount
+  useEffect(() => {
+    const loadIndustries = async () => {
+      try {
+        const resp = await fetch(`${BASE_URL}/api/recruitment/recruiters/industries`, { credentials: 'include' });
+        const data = await resp.json().catch(() => ({}));
+        const items = Array.isArray(data) ? data : (Array.isArray(data?.industries) ? data.industries : []);
+        setIndustries(items);
+      } catch (e) {
+        toast.error('Failed to load industries');
+      }
+    };
+    loadIndustries();
+  }, []);
+
+  // Load companies when industry changes
+  useEffect(() => {
+    const loadCompanies = async () => {
+      if (!industryId) { setCompanies([]); return; }
+      try {
+        const resp = await fetch(`${BASE_URL}/api/recruitment/recruiters/companies/${industryId}`, { credentials: 'include' });
+        const data = await resp.json().catch(() => ({}));
+        const items = Array.isArray(data) ? data : (Array.isArray(data?.companies) ? data.companies : []);
+        setCompanies(items);
+      } catch (e) {
+        toast.error('Failed to load companies');
+      }
+    };
+    loadCompanies();
+  }, [industryId]);
+
+  // Validations (by selection)
+  const nameValid = companyId !== "";
+  const industryValid = industryId !== "";
   const hrValid = values.hrName.trim().length >= 2;
   const phoneValid = /^\+?[0-9\s-]{7,15}$/.test(values.mobile);
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email);
@@ -95,9 +131,13 @@ const EmployerSignupPage = () => {
       const API_BASE = BASE_URL || "";
       const url = `${API_BASE}/api/recruitment/create/corporate-account`;
 
+      // derive names from selections
+      const selectedIndustry = industries.find(i => String(i._id) === String(industryId));
+      const selectedCompany = companies.find(c => String(c._id) === String(companyId));
+
       const payload = {
-        companyName: values.companyName.trim(),
-        industryType: values.industryType.trim(),
+        companyName: selectedCompany?.CompanyName || selectedCompany?.companyName || values.companyName.trim(),
+        industryType: selectedIndustry?.name || values.industryType.trim(),
         hrName: values.hrName.trim(),
         mobile: values.mobile.trim(),
         email: values.email.trim(),
@@ -143,6 +183,8 @@ const EmployerSignupPage = () => {
           location: "",
           productLine: "",
         }));
+        setIndustryId("");
+        setCompanyId("");
         setTouched({ email: true, password: false });
       }
     } catch (err) {
@@ -220,34 +262,43 @@ const EmployerSignupPage = () => {
           )}
 
           <form onSubmit={onSubmit} className="mt-8 space-y-6">
-            {/* Company & Industry */}
+            {/* Industry then Company (dependent dropdowns) */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium">Company Name</label>
-                <input
-                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={values.companyName}
-                  onChange={(e) => setField("companyName", e.target.value)}
-                  onBlur={() => onBlur("companyName")}
-                  placeholder="--"
+                <label className="mb-1 block text-sm font-medium">Industry</label>
+                <select
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  value={industryId}
+                  onChange={(e) => { setIndustryId(e.target.value); setCompanyId(""); }}
+                  onBlur={() => onBlur("industryType")}
                   required
-                />
-                {touched.companyName && !nameValid && (
-                  <p className="mt-1 text-xs text-red-600">Enter a valid company name.</p>
+                >
+                  <option value="">Select industry...</option>
+                  {industries.map((ind) => (
+                    <option key={ind._id} value={ind._id}>{ind.name}</option>
+                  ))}
+                </select>
+                {touched.industryType && !industryValid && (
+                  <p className="mt-1 text-xs text-red-600">Please select an industry.</p>
                 )}
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">Industry Type</label>
-                <input
-                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={values.industryType}
-                  onChange={(e) => setField("industryType", e.target.value)}
-                  onBlur={() => onBlur("industryType")}
-                  placeholder="--"
+                <label className="mb-1 block text-sm font-medium">Company</label>
+                <select
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  value={companyId}
+                  onChange={(e) => setCompanyId(e.target.value)}
+                  onBlur={() => onBlur("companyName")}
                   required
-                />
-                {touched.industryType && !industryValid && (
-                  <p className="mt-1 text-xs text-red-600">Enter a valid industry.</p>
+                  disabled={!industryId}
+                >
+                  <option value="">Select company...</option>
+                  {companies.map((c) => (
+                    <option key={c._id} value={c._id}>{c.CompanyName || c.companyName}</option>
+                  ))}
+                </select>
+                {touched.companyName && !nameValid && (
+                  <p className="mt-1 text-xs text-red-600">Please select a company.</p>
                 )}
               </div>
             </div>
