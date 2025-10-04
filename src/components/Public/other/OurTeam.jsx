@@ -30,7 +30,7 @@ const accentMap = {
   },
 };
 
-const DirectorCard = ({ name, title, imgSrc, linkedin, accent = "indigo" }) => {
+const DirectorCard = ({ name, title, imgSrc, linkedin, accent = "indigo", description = "Driving strategy and excellence at IITGJobs.com Pvt. Ltd. Focused on building high-impact teams and delivering value for partners and candidates.", subtitle }) => {
   const a = accentMap[accent] || accentMap.indigo;
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/5 to-white/0 p-6 backdrop-blur supports-[backdrop-filter]:bg-white/5 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.55)] transition-all duration-300 hover:-translate-y-0.5">
@@ -60,10 +60,12 @@ const DirectorCard = ({ name, title, imgSrc, linkedin, accent = "indigo" }) => {
 
         <h3 className="mt-5 text-xl font-semibold text-white">{name}</h3>
         <p className={`mt-1 text-sm font-medium ${a.text}`}>{title}</p>
+        {subtitle && (
+          <p className={`mt-0.5 text-xs font-medium ${a.text}`}>{subtitle}</p>
+        )}
 
         <p className="mt-3 text-sm text-slate-300/80 leading-relaxed">
-          Driving strategy and excellence at IITGJobs.com Pvt. Ltd. Focused on building high-impact teams
-          and delivering value for partners and candidates.
+          {description}
         </p>
 
         <div className="mt-5 flex items-center gap-3">
@@ -126,6 +128,8 @@ const OurTeam = () => {
             imgSrc="/Gaurav.png"
             linkedin="https://www.linkedin.com/in/gaurav-maske-2ba56516/" // TODO: replace with actual URL
             accent="indigo"
+            description="Driving technology and excellence at IITGJobs.com Pvt. Ltd. Focused on building high-impact teams and delivering value for partners and candidates."
+            subtitle="Principal Product Engineer, Esri, California, United States"
           />
           
         </div>
