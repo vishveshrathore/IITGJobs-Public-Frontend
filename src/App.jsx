@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import PageTransition from "./components/common/PageTransition";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import ApplicationForm from "./components/Public/other/ApplicationForm";
+import OurTeam from "./components/Public/other/OurTeam";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const About = lazy(() => import("./pages/About"));
@@ -37,6 +38,7 @@ function App() {
           <Route path="/attrition-grid" element={<PageTransition><AttritationGrid /></PageTransition>} />
           <Route path="/recuitment-service" element={<PageTransition><RecuitmentService /></PageTransition>} />
           <Route path="/application-form" element={<PageTransition><ApplicationForm /></PageTransition>} />
+          <Route path="/our-team" element={<PageTransition><OurTeam /></PageTransition>} />
           {/* Protected: corporate only */}
           <Route element={<ProtectedRoute requireCorporate corporateRedirectTo="/employer-login" />}> 
             
