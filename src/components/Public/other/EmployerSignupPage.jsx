@@ -262,6 +262,72 @@ const EmployerSignupPage = () => {
           )}
 
           <form onSubmit={onSubmit} className="mt-8 space-y-6">
+            {/* HR Name & Mobile */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium">HR Name</label>
+                <input
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  value={values.hrName}
+                  onChange={(e) => setField("hrName", e.target.value)}
+                  onBlur={() => onBlur("hrName")}
+                  placeholder="--"
+                  required
+                />
+                {touched.hrName && !hrValid && (
+                  <p className="mt-1 text-xs text-red-600">Enter HR's full name.</p>
+                )}
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">Mobile Number</label>
+                <input
+                  type="tel"
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  value={values.mobile}
+                  onChange={(e) => setField("mobile", e.target.value)}
+                  onBlur={() => onBlur("mobile")}
+                  placeholder="--"
+                  required
+                />
+                {touched.mobile && !phoneValid && (
+                  <p className="mt-1 text-xs text-red-600">Enter a valid phone number.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Email & Designation */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium">E-mail</label>
+                <input
+                  type="email"
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  value={values.email}
+                  onChange={(e) => setField("email", e.target.value)}
+                  onBlur={() => onBlur("email")}
+                  placeholder=""
+                  required
+                />
+                {touched.email && !emailValid && (
+                  <p className="mt-1 text-xs text-red-600">Enter a valid email.</p>
+                )}
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">Designation</label>
+                <input
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  value={values.designation}
+                  onChange={(e) => setField("designation", e.target.value)}
+                  onBlur={() => onBlur("designation")}
+                  placeholder=""
+                  required
+                />
+                {touched.designation && !designationValid && (
+                  <p className="mt-1 text-xs text-red-600">Enter a valid designation.</p>
+                )}
+              </div>
+            </div>
+
             {/* Industry then Company (dependent dropdowns) */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -334,71 +400,7 @@ const EmployerSignupPage = () => {
               </div>
             </div>
 
-            {/* HR Name & Mobile */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">HR Name</label>
-                <input
-                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={values.hrName}
-                  onChange={(e) => setField("hrName", e.target.value)}
-                  onBlur={() => onBlur("hrName")}
-                  placeholder="--"
-                  required
-                />
-                {touched.hrName && !hrValid && (
-                  <p className="mt-1 text-xs text-red-600">Enter HR's full name.</p>
-                )}
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">Mobile Number</label>
-                <input
-                  type="tel"
-                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={values.mobile}
-                  onChange={(e) => setField("mobile", e.target.value)}
-                  onBlur={() => onBlur("mobile")}
-                  placeholder="--"
-                  required
-                />
-                {touched.mobile && !phoneValid && (
-                  <p className="mt-1 text-xs text-red-600">Enter a valid phone number.</p>
-                )}
-              </div>
-            </div>
-
-            {/* Email & Designation */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">E-mail</label>
-                <input
-                  type="email"
-                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={values.email}
-                  onChange={(e) => setField("email", e.target.value)}
-                  onBlur={() => onBlur("email")}
-                  placeholder=""
-                  required
-                />
-                {touched.email && !emailValid && (
-                  <p className="mt-1 text-xs text-red-600">Enter a valid email.</p>
-                )}
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">Designation</label>
-                <input
-                  className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={values.designation}
-                  onChange={(e) => setField("designation", e.target.value)}
-                  onBlur={() => onBlur("designation")}
-                  placeholder=""
-                  required
-                />
-                {touched.designation && !designationValid && (
-                  <p className="mt-1 text-xs text-red-600">Enter a valid designation.</p>
-                )}
-              </div>
-            </div>
+            
 
             {/* Password */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

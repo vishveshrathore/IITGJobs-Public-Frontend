@@ -7,16 +7,62 @@ const TrustedCompanies = ({
    "Hager Group",
    "Wipro Limited",
    "Marico",
-   "The Coca-Cola Company",      
+   "the coca-cola company",
+   "itc",      
+   "vodafone-idea",
+   "Sun Flag",
+   "tech mahindra",
+   "IGT",
   ],
   speedMs = 24000, // Lower is faster
   title = "Trusted by leading companies",
+  showNameWithLogo = false, // kept for compat; names are hidden visually when logos exist
+  logoHeight = 56, // px height for marquee logos
+  grayscaleLogos = false, // show original logos by default
+  logoMap = {}, // optional override/extension map: { [lowercased name]: url }
 }) => {
+  // Built-in defaults: put your files under public/logos/*
+  const defaultLogoMap = {
+    "the coca-cola company": "/logos/coca-cola.png",
+    "itc": "/logos/itc.png",
+    "airtel": "/logos/airtel.png",
+    "vodafone-idea": "/logos/VI.png",
+    "marico": "/logos/marico.jpg",
+    "hager": "/logos/hager.png",
+    "hager group": "/logos/hager.png",
+    "Wipro Limited": "/logos/wipro.png",
+    "Sun Flag": "/logos/Sunflag.png",
+    "tech mahindra": "/logos/techmahindra.png",
+    "IGT": "/logos/igt.png",
+  };
+
+  const mergedLogoMap = { ...defaultLogoMap, ...(logoMap || {}) };
+
+  const keyLower = (name) => (name || "").toString().trim().toLowerCase();
+
+  const lookupLogo = (name) => {
+    if (!name) return null;
+    // Try exact key first (preserves your casing like "Wipro Limited")
+    if (mergedLogoMap[name]) return mergedLogoMap[name];
+    // Then try lowercase key
+    const lower = keyLower(name);
+    if (mergedLogoMap[lower]) return mergedLogoMap[lower];
+    // Attempt common normalization for hyphen/space variants
+    const alt = lower.replace(/-/g, " ");
+    return mergedLogoMap[alt] || null;
+  };
+
   // Normalize input: allow strings or objects { name, logoUrl }
-  const normalized = companies.map((it) =>
-    typeof it === "string" ? { name: it, logoUrl: null } : it
-  );
-  const loop = [...normalized, ...normalized];
+  const normalized = companies.map((it) => {
+    if (typeof it === "string") {
+      return { name: it, logoUrl: lookupLogo(it) };
+    }
+    const name = it?.name;
+    return { ...it, logoUrl: it?.logoUrl ?? lookupLogo(name) };
+  });
+  // Only logos per request (skip entries without a logo)
+  const logosOnly = normalized.filter((n) => !!n.logoUrl);
+  const loop = [...logosOnly, ...logosOnly];
 
   const containerRef = useRef(null);
   const trackRef = useRef(null);
@@ -74,7 +120,7 @@ const TrustedCompanies = ({
           </span>
         </div>
 
-        {/* Gradient heading to match TrustedHR */}
+        {/* Heading */}
         <h3 className="mt-2 text-center text-[18px] font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-indigo-500">
           {title}
         </h3>
@@ -90,7 +136,7 @@ const TrustedCompanies = ({
             {loop.map(({ name, logoUrl }, idx) => (
               <motion.div
                 key={`${name}-${idx}`}
-                className="inline-flex items-center gap-2 justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[14px] font-medium text-slate-200 backdrop-blur-sm transition-colors hover:bg-white/10"
+                className="inline-flex items-center justify-center px-2"
                 title={name}
                 initial={{ opacity: 0, y: 6 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -100,13 +146,18 @@ const TrustedCompanies = ({
                 {logoUrl ? (
                   <img
                     src={logoUrl}
-                    alt=""
-                    className="h-5 w-auto object-contain opacity-90"
+                    alt={name}
+                    className={`${grayscaleLogos ? "grayscale hover:grayscale-0" : ""} drop-shadow-[0_1px_8px_rgba(0,0,0,0.35)]`}
+                    style={{ height: logoHeight, width: "auto", objectFit: "contain", imageRendering: "auto" }}
                     loading="lazy"
-                    aria-hidden="true"
+                    onError={(e) => {
+                      // Fallback to hide broken image and show name
+                      e.currentTarget.style.display = "none";
+                    }}
                   />
                 ) : null}
-                <span className="whitespace-nowrap">{name}</span>
+                {/* Keep accessible name for screen readers */}
+                {logoUrl && <span className="sr-only">{name}</span>}
               </motion.div>
             ))}
           </div>

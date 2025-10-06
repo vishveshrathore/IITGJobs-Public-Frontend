@@ -21,6 +21,7 @@ const HeroBanner = () => {
   const lineRefs = useRef([]);
 
   const ctaSecondaryRef = useRef(null);
+  const ctaContainerRef = useRef(null);
 
   useEffect(() => {
     // Intro fade for CTAs only
@@ -38,6 +39,12 @@ const HeroBanner = () => {
       // Ensure only one line is visible at a time
       tlLoop.set(lineRefs.current, { display: 'none', opacity: 0 });
       tlLoop.set(el, { x: START_X, display: 'block' });
+      // Adjust CTA spacing slightly when third line is active
+      tlLoop.to(ctaContainerRef.current, {
+        marginTop: i === 2 ? '2.25rem' : '1.5rem', // mt-9 vs mt-6
+        duration: 0.2,
+        ease: 'power2.out'
+      }, '<');
       tlLoop.to(el, { x: '0%', opacity: 1 });
       tlLoop.to(el, {}, `+=${PAUSE}`);
       tlLoop.to(el, { x: END_X, opacity: 0 });
@@ -136,8 +143,9 @@ const HeroBanner = () => {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 margin: 0,
-                whiteSpace: 'nowrap',
-                fontSize: 'clamp(1.4rem, 4.5vw, 3rem)',
+                whiteSpace: idx === 2 ? 'normal' : 'nowrap',
+                overflowWrap: idx === 2 ? 'anywhere' : undefined,
+                fontSize: idx === 2 ? 'clamp(1.1rem, 4.2vw, 3rem)' : 'clamp(1.4rem, 4.5vw, 3rem)',
                 lineHeight: 1.12,
                 letterSpacing: '0.2px',
                 textShadow: '0 2px 14px rgba(0,0,0,0.65)',
@@ -147,15 +155,27 @@ const HeroBanner = () => {
                 color: 'transparent',
                 willChange: 'transform, opacity',
                 display: 'none',
+                textAlign: 'center',
+                maxWidth: idx === 2 ? '92%' : undefined,
               }}
             >
-              {text}
+              {idx === 2 ? (
+                <>
+                  End to End Hiring Support
+                  {/* Force a line break on mobile only; single line on >=sm */}
+                  <br className="inline sm:hidden" />
+                  <span className="hidden sm:inline"> </span>
+                  Under very Special Model - PPM
+                </>
+              ) : (
+                text
+              )}
             </h1>
           ))}
         </div>
 
 
-        <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+        <div ref={ctaContainerRef} className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
           
           <a
             ref={ctaSecondaryRef}

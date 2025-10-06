@@ -128,7 +128,7 @@ const OurTeam = () => {
             imgSrc="/Gaurav.png"
             linkedin="https://www.linkedin.com/in/gaurav-maske-2ba56516/" // TODO: replace with actual URL
             accent="indigo"
-            description="Driving technology and excellence at IITGJobs.com Pvt. Ltd. Focused on building high-impact teams and delivering value for partners and candidates."
+            description="Driving technology and excellence at IITGJobs.com Pvt. Ltd."
             subtitle="Principal Product Engineer, Esri, California, United States"
           />
           

@@ -370,10 +370,10 @@ const ConfidentialData = () => {
                       <th className="px-4 py-3 text-gray-200">Company</th>
                       {showDates && (
                         <>
-                          <th className="px-4 py-3 text-gray-200">Date</th>
-                          <th className="px-4 py-3 text-gray-200">Date</th>
-                          <th className="px-4 py-3 text-gray-200">Date</th>
-                          <th className="px-4 py-3 text-gray-200">Date</th>
+                          <th className="px-4 py-3 text-gray-200">06/09/2025</th>
+                          <th className="px-4 py-3 text-gray-200">13/09/2025</th>
+                          <th className="px-4 py-3 text-gray-200">20/09/2025</th>
+                          <th className="px-4 py-3 text-gray-200">27/09/2025</th>
                         </>
                       )}
                     </tr>
