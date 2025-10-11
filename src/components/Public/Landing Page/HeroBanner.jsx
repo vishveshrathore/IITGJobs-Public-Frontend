@@ -184,6 +184,12 @@ const HeroBanner = () => {
           >
             Contact Us
           </a>
+          <a
+            href="https://cal.com/iitgjobs.com-pvt.-ltd"
+            className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/15 hover:shadow-lg hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          >
+            Schedule a Call
+          </a>
         </div>
       </div>
 
