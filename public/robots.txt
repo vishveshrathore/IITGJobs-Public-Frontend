@@ -1,0 +1,12 @@
+# robots.txt for IITG Indian Jobs
+# Update Sitemap URL if your canonical domain changes.
+User-agent: *
+Allow: /
+
+# Disallow non-indexable/private routes
+Disallow: /employer-login
+Disallow: /employer-signup
+Disallow: /application-form
+Disallow: /confidential-data
+
+Sitemap: https://iitgindianjobs.com/sitemap.xml

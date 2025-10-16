@@ -52,18 +52,18 @@ const TrustedHR = () => {
           {/* CTAs */}
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
-              href="#hire"
-              onClick={(e) => onAnchor(e, "hire")}
+              href="/contact-us"
               className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-600/25 ring-1 ring-indigo-500 transition hover:translate-y-[-1px] hover:shadow-xl hover:scale-[1.02] hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
             >
               Hire Talent
             </a>
+
             <a
               href="#jobs"
               onClick={(e) => onAnchor(e, "jobs")}
               className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/15 hover:shadow-lg hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
-              Find a Job
+              Search Profile
             </a>
           </div>
 
@@ -73,7 +73,7 @@ const TrustedHR = () => {
             <Pill href="#attrition">Attrition Control</Pill>
             <Pill href="#expertise">HR Expertise</Pill>
           </div>
-        </section> 
+        </section>
       </main>
     </div>
   );
