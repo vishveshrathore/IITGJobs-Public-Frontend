@@ -109,9 +109,9 @@ const About = () => {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(1000px_500px_at_50%_-20%,rgba(99,102,241,0.15),transparent)]" />
         <div className="mx-auto max-w-7xl px-6 pt-20 pb-12 md:pt-28 md:pb-20">
           <div className="reveal transition-all duration-700" data-delay="0ms">
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight">
+            <h1 className="text-4xl md:text-4xl font-black tracking-tight">
               <span className="bg-gradient-to-r from-indigo-400 via-sky-400 to-emerald-400 bg-clip-text text-transparent">
-                IITG Jobs – Trusted HR Solutions Since 1995
+                IITGJobs.com Pvt.Ltd. – Trusted HR Solutions Since 1995
               </span>
             </h1>
             <p className="mt-6 max-w-3xl text-lg text-slate-300 leading-relaxed">

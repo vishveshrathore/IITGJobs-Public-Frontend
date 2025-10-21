@@ -65,7 +65,7 @@ const Footer = () => {
           <div className="flex flex-col gap-2">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Contact</h4>
             <div className="flex flex-col gap-1">
-              <a href="mailto:hr1@iitgjobs.com" className="hover:text-white">contact@iitgjobs.com</a>
+              <a href="mailto:hr1@iitgjobs.com" className="hover:text-white">contact@iitgjobs.co.in</a>
               <a href="mailto:hr2@iitgjobs.com" className="hover:text-white">hr1@iitgjobs.com</a>
             </div>
             <div className="mt-2 flex flex-col gap-1">
@@ -129,7 +129,7 @@ const Footer = () => {
 
         {/* Bottom line */}
         <div className="mt-8 border-t border-white/10 pt-6 text-xs text-slate-400">
-          © {year} IITGJobs. All rights reserved.
+          © {year} IITGJobs.com Pvt.Ltd. All rights reserved.
         </div>
       </div>
     </footer>

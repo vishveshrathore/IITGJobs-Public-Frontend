@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import bannerImage from '../../../assets/banner2.jpg';
 
 const LINES = [
-  'IITG Indian Jobs Welcomes You',
+  'IITG Jobs Welcomes You',
   'Attrition Control Guaranteed',
   'End to End Hiring Support Under very Special Model - PPM',
 ];

@@ -1,1 +1,1 @@
-export const PRIMARY_DOMAIN = "https://iitgindianjobs.com";
+export const PRIMARY_DOMAIN = "https://iitgjobs.co.in";
