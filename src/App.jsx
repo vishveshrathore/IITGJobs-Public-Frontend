@@ -37,9 +37,9 @@ function App() {
     };
     const map = {
       "/": {
-        title: "Best Recruitment Agency in India | IITG Jobs Jabalpur",
+        title: "IITG Jobs | Recruitment Agency",
         description:
-          "IITGJobs.com — trusted recruitment, attrition control, and payroll services. 30+ years of HR excellence across India.",
+          "IITGJobs — trusted recruitment, attrition control. 30+ years of HR excellence across India.",
         jsonLd: {
           "@context": "https://schema.org",
           "@graph": [
@@ -57,7 +57,7 @@ function App() {
               name: "IITGJobs.com Pvt. Ltd.",
               url: `${baseUrl}/`,
               telephone: "+91 7701007817",
-              email: "contact@iitgjobs.com",
+              email: "contact@iitgjobs.co.in",
               address: {
                 "@type": "PostalAddress",
                 streetAddress: "Shiv Hari Complex, beside Hotel Gulzar, Mahanadda",
