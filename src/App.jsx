@@ -37,7 +37,7 @@ function App() {
     };
     const map = {
       "/": {
-        title: "IITG Jobs | Recruitment Agency",
+        title: "IITG Jobs",
         description:
           "IITGJobs — trusted recruitment, attrition control. 30+ years of HR excellence across India.",
         jsonLd: {

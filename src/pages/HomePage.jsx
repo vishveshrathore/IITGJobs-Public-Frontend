@@ -15,7 +15,7 @@ const HomePage = () => {
       {/* SEO Content: Recruitment Agency India */}
       <section className="mx-auto max-w-7xl px-6 py-12 md:py-16">
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-          Recruitment Agency India — IITG Jobs, Jabalpur, Madhya Pradesh
+          IITG Jobs, Jabalpur, Madhya Pradesh
         </h1>
         <p className="mt-4 max-w-3xl text-slate-300 leading-relaxed">
           IITGJobs.com Pvt. Ltd. is India’s trusted recruitment partner from Jabalpur, Madhya Pradesh. We deliver
