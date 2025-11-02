@@ -65,8 +65,8 @@ const Footer = () => {
           <div className="flex flex-col gap-2">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Contact</h4>
             <div className="flex flex-col gap-1">
-              <a href="mailto:hr1@iitgjobs.com" className="hover:text-white">contact@iitgjobs.co.in</a>
-              <a href="mailto:hr2@iitgjobs.com" className="hover:text-white">hr1@iitgjobs.com</a>
+              <a href="mailto:contact@iitgjobs.co.in" className="hover:text-white">contact@iitgjobs.co.in</a>
+              <a href="mailto:hr2@iitgjobs.co.in" className="hover:text-white">hr1@iitgjobs.co.in</a>
             </div>
             <div className="mt-2 flex flex-col gap-1">
               
@@ -77,7 +77,7 @@ const Footer = () => {
           <div className="flex flex-col gap-2">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Office</h4>
             <address className="not-italic text-xs">
-              IITGJobs.com Shiv Hari Complex beside Hotel Gulzar Mahanadda Jabalpur - 482001
+              IITG Jobs Shiv Hari Complex beside Hotel Gulzar Mahanadda Jabalpur - 482001
             </address>
             <a href="https://maps.app.goo.gl/wPK7jdvnoLh4Yg4u8" target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:text-indigo-300 hover:underline">
               View on Google Maps

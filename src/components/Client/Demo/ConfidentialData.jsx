@@ -27,6 +27,33 @@ const ConfidentialData = () => {
   const [rows, setRows] = useState([]);
   const [currentView, setCurrentView] = useState(null); // 'demo' | 'service' | null
   const [showDates, setShowDates] = useState(false); // controls Date columns visibility
+  const [serverNow, setServerNow] = useState(null);
+  const dateHeaders = React.useMemo(() => {
+    const tz = 'Asia/Kolkata';
+    const fmt = new Intl.DateTimeFormat('en-GB', {
+      timeZone: tz,
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    const baseMs = typeof serverNow === 'number' ? serverNow : Date.now();
+    const dayMs = 24 * 60 * 60 * 1000;
+    const d1 = new Date(baseMs);
+    const d2 = new Date(baseMs - 7 * dayMs);
+    const d3 = new Date(baseMs - 14 * dayMs);
+    const d4 = new Date(baseMs - 21 * dayMs);
+    return [fmt.format(d1), fmt.format(d2), fmt.format(d3), fmt.format(d4)];
+  }, [serverNow]);
+
+  useEffect(() => {
+    const loadTime = async () => {
+      try {
+        const { data } = await axios.get(`${BASE_URL}/api/server-time`);
+        if (data?.timestamp) setServerNow(data.timestamp);
+      } catch (_) {}
+    };
+    loadTime();
+  }, []);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -370,10 +397,10 @@ const ConfidentialData = () => {
                       <th className="px-4 py-3 text-gray-200">Company</th>
                       {showDates && (
                         <>
-                          <th className="px-4 py-3 text-gray-200">06/09/2025</th>
-                          <th className="px-4 py-3 text-gray-200">13/09/2025</th>
-                          <th className="px-4 py-3 text-gray-200">20/09/2025</th>
-                          <th className="px-4 py-3 text-gray-200">27/09/2025</th>
+                          <th className="px-4 py-3 text-gray-200">{dateHeaders[0]}</th>
+                          <th className="px-4 py-3 text-gray-200">{dateHeaders[1]}</th>
+                          <th className="px-4 py-3 text-gray-200">{dateHeaders[2]}</th>
+                          <th className="px-4 py-3 text-gray-200">{dateHeaders[3]}</th>
                         </>
                       )}
                     </tr>
