@@ -304,7 +304,7 @@ const ContactForm = () => {
                     </div>
                     <div className="ml-4">
                       <h4 className="text-sm font-medium text-slate-300">Email us</h4>
-                      <p className="mt-1 text-sm text-slate-400">contact@iitgjobs.com</p>
+                      <p className="mt-1 text-sm text-slate-400">contact@iitgjobs.co.in</p>
                     </div>
                   </div>
                   
