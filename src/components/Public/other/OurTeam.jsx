@@ -105,7 +105,7 @@ const OurTeam = () => {
             Leadership Team
           </span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Our Directors
+            Directors
           </h2>
           <p className="mt-3 text-slate-300/80">
             Meet the leaders behind IITGJobs.com Pvt. Ltd., shaping our vision and growth.

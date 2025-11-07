@@ -40,12 +40,14 @@ const INDIAN_REGIONS = [
 
 
 const INDIAN_LANGUAGES = [
+  "Hindi",
+  "English",
   "Assamese",
   "Bengali",
   "Bodo",
   "Dogri",
   "Gujarati",
-  "Hindi",
+  
   "Kannada",
   "Kashmiri",
   "Konkani",
@@ -112,6 +114,7 @@ export default function ApplicationForm() {
   const [currentCTCUnit, setCurrentCTCUnit] = useState("L")
   const [expectedCTCAmount, setExpectedCTCAmount] = useState("")
   const [expectedCTCUnit, setExpectedCTCUnit] = useState("L")
+  const [currentIsPresent, setCurrentIsPresent] = useState(false)
 
   useEffect(() => {
     // Initialize CTC inputs from existing numeric values
@@ -442,17 +445,17 @@ export default function ApplicationForm() {
         pushToast("error", "Please fill required fields: Full Name, Email, Mobile, Date of Birth.")
         setStep(1); setLoading(false); return
       }
-      if (!form.applicationType) {
-        pushToast("error", "Please choose application type (School or College).")
-        setStep(0); setLoading(false); return
-      }
       if (!form.gender || !form.category) {
         pushToast("error", "Please choose Gender and Category.")
         setStep(1); setLoading(false); return
       }
-      if (form.applicationType === "college" && (!form.educationCategory || !form.educationCategory.category || !form.educationCategory.collegeType || !form.educationCategory.details)) {
-        pushToast("error", "Please complete the Education Category fields.")
-        setStep(1); setLoading(false); return
+      // Validate educationCategory only if present in the form
+      if (form.applicationType === "college" && form.educationCategory) {
+        const ec = form.educationCategory
+        if (!ec.category || !ec.collegeType || !ec.details) {
+          pushToast("error", "Please complete the Education Category fields.")
+          setStep(1); setLoading(false); return
+        }
       }
 
       const fd = new FormData()
@@ -471,7 +474,7 @@ export default function ApplicationForm() {
       const CancelToken = axios.CancelToken
       cancelSourceRef.current = CancelToken.source()
       const res = await axios.post(
-        "http://localhost:8000/api/addApplication",
+        `${BASE_URL}/api/recruitment/apply`,
         fd,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -533,24 +536,7 @@ export default function ApplicationForm() {
     )
   }
 
-  function Confetti() {
-    const pieces = new Array(40).fill(0)
-    return (
-      <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
-        {pieces.map((_, i) => (
-          <span
-            key={i}
-            className={`block w-2 h-4 rounded-sm absolute animate-fall`}
-            style={{
-              left: `${Math.random() * 100}%`, top: `${-10 - Math.random() * 20}vh`,
-              background: `hsl(${Math.floor(Math.random() * 360)} 70% 60%)`, transform: `rotate(${Math.random() * 360}deg)`,
-              animationDelay: `${Math.random() * 0.8}s`, animationDuration: `${2 + Math.random() * 2}s`,
-            }}
-          />
-        ))}
-      </div>
-    )
-  }
+  
   
   function Navigation() {
     return (
@@ -596,14 +582,8 @@ export default function ApplicationForm() {
     <Navbar/>
     <div className="min-h-screen bg-slate-900 flex flex-col items-center py-8 px-4">
       
-      <style>{`
-        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.9 } }
-        .animate-fall { animation-name: fall; animation-timing-function: linear; animation-fill-mode: both; }
-      `}</style>
-      
       {submitted ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-6">
-          <Confetti />
           <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-xl p-8 text-center max-w-lg">
             <div className="text-5xl mb-4">🎉</div>
             <h2 className="text-2xl font-bold mb-2 text-slate-100">Submitted Successfully</h2>
@@ -632,7 +612,7 @@ export default function ApplicationForm() {
       ) : null}
 
       <ToastContainer toasts={toasts} />
-      {loading && <FullscreenLoader />}
+      {loading && <FullscreenLoader progress={uploadProgress} />}
       
       <div className="w-full max-w-5xl">
         <header className="text-center mb-6">
@@ -789,7 +769,7 @@ export default function ApplicationForm() {
                       </Input>
                       <Input label="Subject" value={edu.subject} onChange={(v) => setNestedArrayItem("educationQualifications", idx, "subject", v)} />
                       <Input label="Board / University" value={edu.boardOrUniversity} onChange={(v) => setNestedArrayItem("educationQualifications", idx, "boardOrUniversity", v)} />
-                      <Input label="Company Name" value={edu.institutionName} onChange={(v) => setNestedArrayItem("educationQualifications", idx, "institutionName", v)} />
+                      <Input label="Institute Name" value={edu.institutionName} onChange={(v) => setNestedArrayItem("educationQualifications", idx, "institutionName", v)} />
                       <Input label="Year of Passing" type="number" min="0" max={new Date().getFullYear()} value={edu.yearOfPassing} onChange={(v) => setNestedArrayItem("educationQualifications", idx, "yearOfPassing", Math.max(0, Math.min(new Date().getFullYear(), Number(v))))} />
                       <Input label="Percentage or CGPA" value={edu.percentageOrCGPA} onChange={(v) => setNestedArrayItem("educationQualifications", idx, "percentageOrCGPA", v)} />
                     </div>
@@ -824,7 +804,30 @@ export default function ApplicationForm() {
                       <Input label="Level" value={form.jobLevel} onChange={(v) => setField("jobLevel", v)} />
                       <Input label="Job Role" value={form.jobRole} onChange={(v) => setField("jobRole", v)} />
                       <Input label="Start Date" type="date" value={form.currentStartDate} onChange={(v) => setField("currentStartDate", v)} />
-                      <Input label="End Date" type="date" value={form.currentEndDate} onChange={(v) => setField("currentEndDate", v)} />
+                      <div>
+                        <label className="block mb-1 text-sm font-medium text-slate-300">End Date</label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="date"
+                            value={form.currentEndDate || ""}
+                            onChange={(e) => setField("currentEndDate", e.target.value)}
+                            disabled={currentIsPresent}
+                            className="rounded-lg border border-slate-600 bg-slate-700 text-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                          />
+                          <label className="inline-flex items-center gap-2 text-slate-300 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={currentIsPresent}
+                              onChange={(e) => {
+                                const on = e.target.checked
+                                setCurrentIsPresent(on)
+                                if (on) setField("currentEndDate", "")
+                              }}
+                            />
+                            Present
+                          </label>
+                        </div>
+                      </div>
                       <div>
                         <label className="block mb-1 text-sm font-medium text-slate-300">Current CTC</label>
                         <div className="grid grid-cols-[1fr_auto] gap-2">
@@ -1285,14 +1288,21 @@ function ToastContainer({ toasts }) {
   )
 }
 
-function FullscreenLoader() {
+function FullscreenLoader({ progress = 0 }) {
+  const pct = Math.max(0, Math.min(100, Math.round(progress)))
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-xl px-8 py-6 flex flex-col items-center gap-4 w-80">
+      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-xl px-8 py-6 flex flex-col items-center gap-4 w-96">
         <FaSpinner className="text-4xl text-indigo-500 animate-spin" />
         <div className="text-lg font-semibold text-slate-200">Submitting Application</div>
-        <div className="text-sm text-slate-400 text-center">
-          Please wait while we securely upload your information.
+        <div className="w-full">
+          <div className="h-2 w-full rounded-full bg-slate-700 overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-indigo-500 via-blue-500 to-emerald-500" style={{ width: `${pct}%` }} />
+          </div>
+          <div className="mt-2 text-right text-sm text-slate-300">{pct}%</div>
+        </div>
+        <div className="text-xs text-slate-400 text-center">
+          Please wait while we securely upload your files and details.
         </div>
       </div>
     </div>

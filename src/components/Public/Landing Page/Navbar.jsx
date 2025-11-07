@@ -26,7 +26,7 @@ const navConfig = [
     dropdown: [
       // { label: "Employer Login", href: "/employer-login" },
       { label: "Employer Signup", href: "/employer-signup" },
-      { label: "Search Profile", href: "/search-profile" },
+      { label: "Search Profile", href: "/search-profiles" },
     ],
   },
 ];

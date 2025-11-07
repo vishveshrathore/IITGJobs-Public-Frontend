@@ -18,11 +18,12 @@ const ConfidentialData = lazy(() => import("./components/Client/Demo/Confidentia
 const ContactUs = lazy(() => import("./components/Public/other/ContactUs"));
 const EmployerLoginPage = lazy(() => import("./components/Public/other/EmployerLoginPage"));
 const RecuitmentService = lazy(() => import("./components/Client/Recuitment/Recuitment"));
+const SearchProfiles = lazy(() => import("./components/Public/other/SearchProfiles"));
 
 function App() {
   const location = useLocation();
 
-  useEffect(() => {
+  useEffect(() => { 
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
@@ -249,6 +250,8 @@ function App() {
             
             <Route path="/confidential-data" element={<PageTransition><ConfidentialData /></PageTransition>} />
           </Route>
+
+          <Route path="/search-profiles" element={<PageTransition><SearchProfiles /></PageTransition>} />
         </Routes>
       </Suspense>
     </AnimatePresence>
