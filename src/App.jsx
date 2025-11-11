@@ -222,7 +222,7 @@ function App() {
 
   return (
     <AnimatePresence mode="wait">
-      <Suspense fallback={<div className="min-h-screen bg-gray-950 text-slate-200 flex items-center justify-center">Loading…</div>}>
+      <Suspense fallback={<div className="min-h-screen text-foreground flex items-center justify-center">Loading…</div>}>
         <SEO
           title={seo.title}
           description={seo.description}

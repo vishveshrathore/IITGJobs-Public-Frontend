@@ -3,13 +3,14 @@ import React from "react";
 const Footer = () => {
   const year = new Date().getFullYear(); // auto updates year
   return (
-    <footer className="border-t border-white/10 bg-gradient-to-b from-black/85 via-slate-950/70 to-slate-900/60 py-12 text-sm text-slate-300">
+    <footer className="border-t border-border py-12 text-sm text-muted"
+            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.50), rgba(0,0,0,0.25))' }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 ring-1 ring-white/10 shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface ring-1 border border-border shadow-sm">
                 <svg
                   viewBox="0 0 40 40"
                   className="h-4 w-4"
@@ -26,8 +27,8 @@ const Footer = () => {
                       y2="40"
                       gradientUnits="userSpaceOnUse"
                     >
-                      <stop stopColor="#2563eb" />
-                      <stop offset="1" stopColor="#1e3a8a" />
+                      <stop stopColor="var(--color-brand-500)" />
+                      <stop offset="1" stopColor="var(--color-brand-700)" />
                     </linearGradient>
                   </defs>
                   <circle
@@ -39,23 +40,23 @@ const Footer = () => {
                   />
                   <path
                     d="M15 11v18"
-                    stroke="#2563eb"
+                    stroke="var(--color-brand-600)"
                     strokeWidth="2"
                     strokeLinecap="round"
                   />
                   <path
                     d="M25 11v11c0 4.2-3.4 7.6-7.6 7.6"
-                    stroke="#2563eb"
+                    stroke="var(--color-brand-600)"
                     strokeWidth="2"
                     strokeLinecap="round"
                   />
                 </svg>
               </div>
-              <span className="text-base font-semibold text-white">
+              <span className="text-base font-semibold text-foreground">
                 IITGJobs.com Pvt. Ltd.
               </span>
             </div>
-            <p className="max-w-sm text-xs text-slate-400">
+            <p className="max-w-sm text-xs text-muted">
               30+ years of trusted recruitment and HR solutions. Building careers
               and empowering businesses.
             </p>
@@ -63,10 +64,10 @@ const Footer = () => {
 
           {/* Contact */}
           <div className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Contact</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted">Contact</h4>
             <div className="flex flex-col gap-1">
-              <a href="mailto:contact@iitgjobs.co.in" className="hover:text-white">contact@iitgjobs.co.in</a>
-              <a href="mailto:hr2@iitgjobs.co.in" className="hover:text-white">hr1@iitgjobs.co.in</a>
+              <a href="mailto:contact@iitgjobs.co.in" className="badge-link">contact@iitgjobs.co.in</a>
+              <a href="mailto:hr2@iitgjobs.co.in" className="badge-link">hr1@iitgjobs.co.in</a>
             </div>
             <div className="mt-2 flex flex-col gap-1">
               
@@ -75,19 +76,19 @@ const Footer = () => {
 
           {/* Office */}
           <div className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">Office</h4>
-            <address className="not-italic text-xs">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted">Office</h4>
+            <address className="not-italic text-xs text-foreground">
               IITG Jobs Shiv Hari Complex beside Hotel Gulzar Mahanadda Jabalpur - 482001
             </address>
-            <a href="https://maps.app.goo.gl/wPK7jdvnoLh4Yg4u8" target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:text-indigo-300 hover:underline">
+            <a href="https://maps.app.goo.gl/wPK7jdvnoLh4Yg4u8" target="_blank" rel="noreferrer" className="text-xs badge-link">
               View on Google Maps
             </a>
-            <p className="text-xs">Hours: Mon–Sat, 10:30 AM – 7:00 PM</p>
+            <p className="text-xs text-muted">Hours: Mon–Sat, 10:30 AM – 7:00 PM</p>
           </div>
 
           {/* Socials */}
           <div className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted">
               Follow
             </h4>
             <div className="flex items-center gap-4">
@@ -95,7 +96,7 @@ const Footer = () => {
                 href="https://www.linkedin.com/company/iitg-jobs-pvt-ltd-/posts/?feedView=all"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 hover:text-white"
+                className="inline-flex items-center gap-2 badge-link"
               >
                 <svg
                   className="h-4 w-4"
@@ -111,7 +112,7 @@ const Footer = () => {
                 href="https://www.instagram.com/iitg_job?igsh=aHA1NWs0ZHAzNm9s"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 hover:text-white"
+                className="inline-flex items-center gap-2 badge-link"
               >
                 <svg
                   className="h-4 w-4"
@@ -128,7 +129,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom line */}
-        <div className="mt-8 border-t border-white/10 pt-6 text-xs text-slate-400">
+        <div className="mt-8 border-t border-border pt-6 text-xs text-muted">
           © {year} IITGJobs.com Pvt.Ltd. All rights reserved.
         </div>
       </div>

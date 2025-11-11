@@ -95,7 +95,7 @@ const About = () => {
   const counts = stats.map((s) => useCountUp(s.end));
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100 relative">
+    <div className="min-h-screen text-foreground relative">
       {/* Decorative animated background */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-indigo-500/30 to-teal-400/20 blur-3xl animate-float-slow" />

@@ -60,7 +60,7 @@ const Dropdown = ({ label, items }) => {
   return (
     <div className="relative" ref={ref}>
       <button
-        className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-slate-200 hover:text-white"
+        className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-foreground hover:text-brand-300"
         onClick={() => setOpen((v) => !v)}
         onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
       >
@@ -83,11 +83,11 @@ const Dropdown = ({ label, items }) => {
 
       <div
         className={classNames(
-          "absolute left-0 mt-2 w-60 origin-top-left rounded-xl border border-white/10 bg-slate-900/95 p-2 shadow-xl ring-1 ring-white/10 transition-all z-50",
+          "absolute left-0 mt-2 w-60 origin-top-left rounded-xl border border-border bg-surface-95 p-2 shadow-xl transition-all z-50",
           open ? "opacity-100 scale-100" : "pointer-events-none opacity-0 scale-95"
         )}
       >
-        <div className="absolute -top-2 left-6 h-4 w-4 rotate-45 border border-white/10 bg-slate-900" />
+        <div className="absolute -top-2 left-6 h-4 w-4 rotate-45 border border-border bg-surface" />
         {items.map((it) => (
           <NavLink
             key={it.label}
@@ -96,11 +96,11 @@ const Dropdown = ({ label, items }) => {
             className={({ isActive }) =>
               classNames(
                 "group flex items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-white/5",
-                isActive ? "text-indigo-400" : "text-slate-200"
+                isActive ? "text-brand-300" : "text-foreground"
               )
             }
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-500/80 group-hover:scale-125 transition-transform" />
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-600 group-hover:scale-125 transition-transform" />
             {it.label}
           </NavLink>
         ))}
@@ -113,10 +113,10 @@ const Dropdown = ({ label, items }) => {
 const MobileAccordion = ({ label, items }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-t border-slate-200 dark:border-slate-700">
+    <div className="border-t border-border">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-slate-700 dark:text-slate-200"
+        className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-foreground"
       >
         {label}
         <svg
@@ -139,10 +139,8 @@ const MobileAccordion = ({ label, items }) => {
               to={it.href}
               className={({ isActive }) =>
                 classNames(
-                  "block px-8 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800/60",
-                  isActive
-                    ? "text-indigo-600 dark:text-indigo-400"
-                    : "text-slate-600 dark:text-slate-300"
+                  "block px-8 py-2 text-sm hover:bg-white/5",
+                  isActive ? "text-brand-300" : "text-foreground"
                 )
               }
             >
@@ -200,25 +198,30 @@ const Navbar = () => {
       className={classNames(
         "sticky top-0 z-50 w-full backdrop-blur-xl border-b",
         scrolled
-          ? "bg-gradient-to-b from-black/80 via-slate-950/70 to-slate-900/60 border-white/10 shadow"
-          : "bg-gradient-to-b from-black/60 via-slate-950/50 to-slate-900/40 border-white/5"
+          ? "border-border shadow"
+          : "border-border"
       )}
+      style={{
+        background: scrolled
+          ? 'linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0.35))'
+          : 'linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.25))'
+      }}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
         {/* ✅ Brand */}
         <button onClick={() => scrollToId("home")} className="group flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white ring-1 shadow-sm dark:bg-slate-900">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface ring-1 shadow-sm">
             <svg viewBox="0 0 40 40" className="h-6 w-6" fill="none">
-              <circle cx="20" cy="20" r="15.5" stroke="#2563eb" />
-              <path d="M15 11v18" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" />
-              <path d="M25 11v11c0 4.2-3.4 7.6-7.6 7.6" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" />
+              <circle cx="20" cy="20" r="15.5" stroke="var(--color-brand-600)" />
+              <path d="M15 11v18" stroke="var(--color-brand-600)" strokeWidth="2" strokeLinecap="round" />
+              <path d="M25 11v11c0 4.2-3.4 7.6-7.6 7.6" stroke="var(--color-brand-600)" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="text-[17px] font-semibold text-white">
+            <span className="text-[17px] font-semibold text-foreground">
               IITGJobs.com Pvt. Ltd.
             </span>
-            <span className="text-[12px] font-medium text-slate-300">Jobs • Talent • Growth</span>
+            <span className="text-[12px] font-medium text-muted">Jobs • Talent • Growth</span>
           </div>
         </button>
 
@@ -234,9 +237,7 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   classNames(
                     "px-4 py-2.5 text-base font-medium",
-                    isActive
-                      ? "text-indigo-500 dark:text-indigo-400"
-                      : "text-slate-200 hover:text-white"
+                    isActive ? "text-brand-300" : "text-foreground hover:text-brand-300"
                   )
                 }
               >
@@ -248,9 +249,7 @@ const Navbar = () => {
                 onClick={() => scrollToId(item.target)}
                 className={classNames(
                   "relative px-4 py-2.5 text-base font-medium",
-                  activeSection === item.target
-                    ? "text-indigo-500 dark:text-indigo-400"
-                    : "text-slate-200 hover:text-white"
+                  activeSection === item.target ? "text-brand-300" : "text-foreground hover:text-brand-300"
                 )}
               >
                 {item.label}
@@ -262,7 +261,7 @@ const Navbar = () => {
         {/* ✅ Mobile Toggle */}
         <button
           onClick={() => setMobileOpen((v) => !v)}
-          className="lg:hidden p-2 text-slate-200"
+          className="lg:hidden p-2 text-foreground"
         >
           {mobileOpen ? "✕" : "☰"}
         </button>
@@ -270,7 +269,8 @@ const Navbar = () => {
 
       {/* ✅ Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t bg-gradient-to-b from-black/80 via-slate-950/70 to-slate-900/60">
+        <div className="lg:hidden border-t border-border"
+             style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0.35))' }}>
           {navConfig.map((item) =>
             item.dropdown ? (
               <MobileAccordion key={item.label} label={item.label} items={item.dropdown} />
@@ -279,7 +279,7 @@ const Navbar = () => {
                 key={item.label}
                 to={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="block px-5 py-3 text-base text-slate-200 hover:text-white"
+                className="block px-5 py-3 text-base text-foreground hover:text-brand-300"
               >
                 {item.label}
               </NavLink>
@@ -290,7 +290,7 @@ const Navbar = () => {
                   scrollToId(item.target);
                   setMobileOpen(false);
                 }}
-                className="block w-full text-left px-5 py-3 text-base text-slate-200 hover:text-white"
+                className="block w-full text-left px-5 py-3 text-base text-foreground hover:text-brand-300"
               >
                 {item.label}
               </button>
