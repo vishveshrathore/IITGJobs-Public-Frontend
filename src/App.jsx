@@ -18,7 +18,10 @@ const ConfidentialData = lazy(() => import("./components/Client/Demo/Confidentia
 const ContactUs = lazy(() => import("./components/Public/other/ContactUs"));
 const EmployerLoginPage = lazy(() => import("./components/Public/other/EmployerLoginPage"));
 const RecuitmentService = lazy(() => import("./components/Client/Recuitment/Recuitment"));
+const PostJob = lazy(() => import("./pages/Recruitment/PostJob"));
 const SearchProfiles = lazy(() => import("./components/Public/other/SearchProfiles"));
+const Recruitment = lazy(() => import("./pages/Recruitment/Recruitment"));
+const JobDetails = lazy(() => import("./pages/Recruitment/JobDetails"));
 
 function App() {
   const location = useLocation();
@@ -243,12 +246,15 @@ function App() {
           <Route path="/employer-login" element={<PageTransition><EmployerLoginPage /></PageTransition>} />
           <Route path="/attrition-grid" element={<PageTransition><AttritationGrid /></PageTransition>} />
           <Route path="/recuitment-service" element={<PageTransition><RecuitmentService /></PageTransition>} />
+          <Route path="/post-job" element={<PageTransition><PostJob /></PageTransition>} />
           <Route path="/application-form" element={<PageTransition><ApplicationForm /></PageTransition>} />
           <Route path="/our-team" element={<PageTransition><OurTeam /></PageTransition>} />
           {/* Protected: corporate only */}
           <Route element={<ProtectedRoute requireCorporate corporateRedirectTo="/employer-login" />}> 
             
             <Route path="/confidential-data" element={<PageTransition><ConfidentialData /></PageTransition>} />
+            <Route path="/recruitment/my-jobs" element={<PageTransition><Recruitment /></PageTransition>} />
+            <Route path="/recruitment/job/:id" element={<PageTransition><JobDetails /></PageTransition>} />
           </Route>
 
           <Route path="/search-profiles" element={<PageTransition><SearchProfiles /></PageTransition>} />

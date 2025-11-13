@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAuth } from '../../../context/authcontext.jsx';
 import axios from 'axios';
 import { BASE_URL } from '../../../config';
 import Navbar from "../Landing Page/Navbar";
 import Footer from "../Landing Page/Footer";
+import { toast } from 'react-hot-toast';
 
 export default function SearchProfiles() {
+  const { isAuthenticated, isCorporate, user, isHydrating } = useAuth();
+  const canUseAdvanced = isAuthenticated && isCorporate;
   // Mode & keywords
   const [mode, setMode] = useState('general'); // 'general' | 'advanced'
   const [keyword, setKeyword] = useState('');
@@ -128,15 +132,31 @@ export default function SearchProfiles() {
   , basicQual, basicReq, profQual, profReq, minLevel, department, keySkill, prefIndustry, countries, states, ageFrom, ageTo, institutes, keywords, keywordsMode, preferredCompanies, preferredCompaniesOther, antiCompanies, antiCompaniesOther, positionRole]);
 
   useEffect(() => {
+    // Guard: if advanced is selected while not allowed, force back to general
+    if (mode === 'advanced' && !canUseAdvanced) {
+      setMode('general');
+    }
     if (!appliedQs) return; // wait until Apply is clicked
+    if (isHydrating) return; // wait for auth hydration
+    if (!canUseAdvanced) return; // do not call protected API
     let cancelled = false;
     (async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get(`${BASE_URL}/api/recruitment/filtered-search`, { params: appliedQs });
+        const params = { ...appliedQs };
+        if (user?.id) params.employerId = user.id;
+        if (user?.email) params.email = user.email;
+        const { data } = await axios.get(`${BASE_URL}/api/recruitment/filtered-search`, { params, withCredentials: true });
         if (!cancelled) setResults(Array.isArray(data?.data) ? data.data : []);
       } catch (e) {
-        if (!cancelled) setResults([]);
+        if (!cancelled) {
+          setResults([]);
+          const status = e?.response?.status;
+          const msg = e?.response?.data?.message || e?.message || 'Failed to fetch';
+          if (status === 403) toast.error(`Access denied: ${msg}`);
+          else if (status === 401) toast.error(`Unauthorized: ${msg}`);
+          else toast.error(msg);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -155,9 +175,25 @@ export default function SearchProfiles() {
           
           <div className="segmented">
             <button className={`${mode==='general' ? 'active' : ''}`} onClick={() => setMode('general')}>General</button>
-            <button className={`${mode==='advanced' ? 'active' : ''}`} onClick={() => setMode('advanced')}>Advanced</button>
+            <button
+              className={`${mode==='advanced' ? 'active' : ''}`}
+              onClick={() => { if (canUseAdvanced) setMode('advanced'); }}
+              disabled={!canUseAdvanced}
+              title={!canUseAdvanced ? 'Login as Employer to use Advanced Search' : undefined}
+            >Advanced</button>
           </div>
         </div>
+        {!canUseAdvanced && (
+          <div className="text-sm text-muted">
+            Advanced Search is available after Employer login.
+            {' '}
+            <a href="/employer-login" className="text-brand-300 hover:underline">Login</a>
+            {' '}
+            or
+            {' '}
+            <a href="/employer-signup" className="text-brand-300 hover:underline">Create account</a>
+          </div>
+        )}
 
         <div className="card p-4">
           {mode === 'general' ? (
@@ -363,7 +399,7 @@ export default function SearchProfiles() {
                 </div>
               </div>
               <div className="flex items-end gap-2">
-                <button onClick={()=> setAppliedQs({ ...qs })} disabled={loading} className="btn btn-primary">Apply</button>
+                <button onClick={()=> setAppliedQs({ ...qs })} disabled={loading || !canUseAdvanced} title={!canUseAdvanced ? 'Login required' : undefined} className="btn btn-primary disabled:opacity-60 disabled:cursor-not-allowed">Apply</button>
                 <button onClick={()=>{
                   setKeyword(''); setJobRole(''); setCurrentCompanyName(''); setCurrentDesignation(''); setRegion(''); setGender(''); setCategory(''); setEducation(''); setApplicationType(''); setLanguages([]); setMinExp(''); setMaxExp(''); setFromDate(''); setToDate('');
                   setAgeFrom(''); setAgeTo(''); setInstitutes([]); setKeywords(''); setKeywordsMode('all'); setPreferredCompanies([]); setPreferredCompaniesOther(''); setAntiCompanies([]); setAntiCompaniesOther(''); setPositionRole('any');

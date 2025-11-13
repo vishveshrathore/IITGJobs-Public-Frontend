@@ -5,6 +5,7 @@ import axios from "axios";
 import { BASE_URL } from "../../../config";
 import { useAuth } from "../../../context/authcontext.jsx";
 import Footer from "../../Public/Landing Page/Footer.jsx";
+import { toast } from "react-hot-toast";
 
 const ConfidentialData = () => {
   const navigate = useNavigate();
@@ -63,6 +64,11 @@ const ConfidentialData = () => {
         setCompanies(Array.isArray(data?.data) ? data.data : []);
       } catch (e) {
         setMessage(e?.response?.data?.message || e?.message || "Failed to load companies");
+        const status = e?.response?.status;
+        const msg = e?.response?.data?.message || e?.message || 'Failed to load companies';
+        if (status === 403) toast.error(`Access denied: ${msg}`);
+        else if (status === 401) toast.error(`Unauthorized: ${msg}`);
+        else toast.error(msg);
       } finally {
         setCompaniesLoading(false);
       }
@@ -110,7 +116,12 @@ const ConfidentialData = () => {
       const resp = await fetch(url, { credentials: 'include' });
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok || data?.success === false) {
-        throw new Error(data?.message || `Request failed (${resp.status})`);
+        const msg = data?.message || `Request failed (${resp.status})`;
+        setTableError(msg);
+        if (resp.status === 403) toast.error(`Access denied: ${msg}`);
+        else if (resp.status === 401) toast.error(`Unauthorized: ${msg}`);
+        else toast.error(msg);
+        return;
       }
       const list = Array.isArray(data?.data) ? data.data : [];
       // Normalize to required columns (+ demo 'Date' fields if present)
@@ -127,6 +138,7 @@ const ConfidentialData = () => {
       setRows(mapped);
     } catch (e) {
       setTableError(e?.message || "Failed to load data");
+      toast.error(e?.message || 'Failed to load data');
     } finally {
       setTableLoading(false);
     }
@@ -177,8 +189,14 @@ const ConfidentialData = () => {
       if (!userEmail) throw new Error("No email found in session. Please login.");
       await axios.post(`${BASE_URL}/api/recruitment/public/send-otp`, { email: userEmail, companyId });
       setMessage("Submit OTP to see demo data");
+      toast.success('OTP sent');
     } catch (e) {
-      setMessage(e?.response?.data?.message || e?.message || "Failed to send OTP");
+      const status = e?.response?.status;
+      const msg = e?.response?.data?.message || e?.message || "Failed to send OTP";
+      setMessage(msg);
+      if (status === 403) toast.error(`Access denied: ${msg}`);
+      else if (status === 401) toast.error(`Unauthorized: ${msg}`);
+      else toast.error(msg);
     } finally {
       setSending(false);
     }
@@ -193,6 +211,7 @@ const ConfidentialData = () => {
       if (data?.success) {
         setVerified(true);
         setMessage("Verified! You can access the data now.");
+        toast.success('Verification successful');
         try {
           const key = `public_access_verified:${userEmail}:${companyId}`;
           localStorage.setItem(key, '1');
@@ -213,10 +232,17 @@ const ConfidentialData = () => {
           }, 400);
         }
       } else {
-        setMessage(data?.message || "Failed to verify OTP");
+        const msg = data?.message || "Failed to verify OTP";
+        setMessage(msg);
+        toast.error(msg);
       }
     } catch (e) {
-      setMessage(e?.response?.data?.message || e?.message || "Failed to verify OTP");
+      const status = e?.response?.status;
+      const msg = e?.response?.data?.message || e?.message || "Failed to verify OTP";
+      setMessage(msg);
+      if (status === 403) toast.error(`Access denied: ${msg}`);
+      else if (status === 401) toast.error(`Unauthorized: ${msg}`);
+      else toast.error(msg);
     } finally {
       setVerifying(false);
     }

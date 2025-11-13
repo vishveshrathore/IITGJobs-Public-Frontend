@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       } else if (storedCorpToken && (storedCorpAcc || !storedCorpAccStr)) {
         // Allow login persistence even if corp_account is missing. Use minimal user info.
         const cleanCorp = storedCorpAcc ? {
-          id: storedCorpAcc.id,
+          id: storedCorpAcc.id ?? storedCorpAcc._id,
           name: storedCorpAcc.hrName || storedCorpAcc.companyName || "Employer",
           hrName: storedCorpAcc.hrName || "",
           email: storedCorpAcc.email || "",
@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
     if (typeof remember === 'undefined') remember = true; // default to persistent
 
     const cleanCorp = {
-      id: account.id,
+      id: account.id ?? account._id,
       name: account.hrName || account.companyName || "Employer",
       hrName: account.hrName || "",
       email: account.email || "",

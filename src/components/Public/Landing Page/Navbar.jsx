@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/authcontext.jsx";
 
 // ✅ Menu Config
 const navConfig = [
@@ -18,15 +19,18 @@ const navConfig = [
     label: "Jobs",
     dropdown: [
       { label: "Post Resume", href: "/application-form" },
-      // { label: "Candidate Login", href: "/jobs/login" },
+      
     ],
   },
   {
     label: "Employer",
     dropdown: [
-      // { label: "Employer Login", href: "/employer-login" },
+      { label: "Employer Login", href: "/employer-login" },
       { label: "Employer Signup", href: "/employer-signup" },
+      { label: "My Jobs", href: "/recruitment/my-jobs" },
       { label: "Search Profile", href: "/search-profiles" },
+      { label: "Post Job", href: "/post-job" },
+      
     ],
   },
 ];
@@ -160,6 +164,7 @@ const Navbar = () => {
   const [activeSection, setActiveSection] = useState("home");
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, isCorporate, user, logout } = useAuth();
 
   // Smooth scroll
   const scrollToId = (id) => {
@@ -183,10 +188,7 @@ const Navbar = () => {
   useEffect(() => {
     const ids = ["home", "about", "services"];
     const observer = new IntersectionObserver(
-      (entries) =>
-        entries.forEach(
-          (entry) => entry.isIntersecting && setActiveSection(entry.target.id)
-        ),
+      (entries) => entries.forEach((entry) => entry.isIntersecting && setActiveSection(entry.target.id)),
       { rootMargin: "-40% 0px -55% 0px" }
     );
     ids.map((id) => document.getElementById(id)).filter(Boolean).forEach((el) => observer.observe(el));
@@ -197,9 +199,7 @@ const Navbar = () => {
     <header
       className={classNames(
         "sticky top-0 z-50 w-full backdrop-blur-xl border-b",
-        scrolled
-          ? "border-border shadow"
-          : "border-border"
+        scrolled ? "border-border shadow" : "border-border"
       )}
       style={{
         background: scrolled
@@ -218,9 +218,7 @@ const Navbar = () => {
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="text-[17px] font-semibold text-foreground">
-              IITGJobs.com Pvt. Ltd.
-            </span>
+            <span className="text-[17px] font-semibold text-foreground">IITGJobs.com Pvt. Ltd.</span>
             <span className="text-[12px] font-medium text-muted">Jobs • Talent • Growth</span>
           </div>
         </button>
@@ -258,43 +256,67 @@ const Navbar = () => {
           )}
         </div>
 
+        {/* ✅ Account (Desktop) */}
+        {isAuthenticated && isCorporate ? (
+          <div className="hidden lg:flex items-center">
+            <AccountDropdown
+              name={user?.hrName || user?.name || "Employer"}
+              details={{
+                name: user?.hrName || user?.name || "-",
+                companyName: user?.companyName || "-",
+                email: user?.email || "-",
+                mobile: user?.mobile || "-",
+                designation: user?.designation || "-",
+              }}
+              onMyJobs={() => navigate('/recruitment/my-jobs')}
+              onLogout={() => { logout(); navigate('/'); }}
+            />
+          </div>
+        ) : (
+          <div className="hidden lg:flex items-center gap-2">
+            <NavLink to="/employer-login" className="px-4 py-2.5 text-base font-medium text-foreground hover:text-brand-300">Employer Login</NavLink>
+          </div>
+        )}
+
         {/* ✅ Mobile Toggle */}
-        <button
-          onClick={() => setMobileOpen((v) => !v)}
-          className="lg:hidden p-2 text-foreground"
-        >
+        <button onClick={() => setMobileOpen((v) => !v)} className="lg:hidden p-2 text-foreground">
           {mobileOpen ? "✕" : "☰"}
         </button>
       </nav>
 
       {/* ✅ Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-border"
-             style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0.35))' }}>
+        <div className="lg:hidden border-t border-border" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0.35))' }}>
           {navConfig.map((item) =>
             item.dropdown ? (
               <MobileAccordion key={item.label} label={item.label} items={item.dropdown} />
             ) : item.href ? (
-              <NavLink
-                key={item.label}
-                to={item.href}
-                onClick={() => setMobileOpen(false)}
-                className="block px-5 py-3 text-base text-foreground hover:text-brand-300"
-              >
+              <NavLink key={item.label} to={item.href} onClick={() => setMobileOpen(false)} className="block px-5 py-3 text-base text-foreground hover:text-brand-300">
                 {item.label}
               </NavLink>
             ) : (
               <button
                 key={item.label}
-                onClick={() => {
-                  scrollToId(item.target);
-                  setMobileOpen(false);
-                }}
+                onClick={() => { scrollToId(item.target); setMobileOpen(false); }}
                 className="block w-full text-left px-5 py-3 text-base text-foreground hover:text-brand-300"
               >
                 {item.label}
               </button>
             )
+          )}
+
+          {isAuthenticated && isCorporate && (
+            <div className="border-t border-border mt-1">
+              <div className="px-5 pt-3 pb-1 text-sm text-foreground/80">{user?.hrName || user?.name || 'Employer'}</div>
+              <div className="px-5 pb-2 text-xs text-foreground/70 space-y-1">
+                <div><span className="text-foreground/50">Company:</span> {user?.companyName || '-'}</div>
+                <div><span className="text-foreground/50">Designation:</span> {user?.designation || '-'}</div>
+                <div><span className="text-foreground/50">Email:</span> {user?.email || '-'}</div>
+                <div><span className="text-foreground/50">Mobile:</span> {user?.mobile || '-'}</div>
+              </div>
+              <button className="block w-full text-left px-5 py-3 text-base text-foreground hover:text-brand-300" onClick={() => { navigate('/recruitment/my-jobs'); setMobileOpen(false); }}>My Jobs</button>
+              <button className="block w-full text-left px-5 py-3 text-base text-red-400 hover:text-red-300" onClick={() => { logout(); setMobileOpen(false); navigate('/'); }}>Logout</button>
+            </div>
           )}
         </div>
       )}
@@ -303,3 +325,69 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+// Local Account Dropdown
+const AccountDropdown = ({ name, details, onMyJobs, onLogout }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useOnClickOutside(ref, () => setOpen(false));
+
+  return (
+    <div className="relative ml-2" ref={ref}>
+      <button
+        className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground hover:text-brand-300"
+        onMouseEnter={() => setOpen(true)}
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+      >
+        <span className="whitespace-nowrap">{name}</span>
+        <svg
+          className={classNames("h-4 w-4 transition-transform duration-200", open ? "rotate-180" : "rotate-0")}
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+      <div
+        className={classNames(
+          "absolute right-0 mt-2 w-64 origin-top-right rounded-xl border border-border bg-surface-95 p-2 shadow-xl transition-all z-50",
+          open ? "opacity-100 scale-100" : "pointer-events-none opacity-0 scale-95"
+        )}
+        role="menu"
+      >
+        <div className="absolute -top-2 right-6 h-4 w-4 rotate-45 border border-border bg-surface" />
+        <div className="px-3 py-2 text-sm text-foreground/90">
+          <div className="font-medium">{details?.name || name}</div>
+          <div className="mt-2 grid grid-cols-1 gap-1 text-xs text-foreground/75">
+            <div><span className="text-foreground/50">Company:</span> {details?.companyName || '-'}</div>
+            <div><span className="text-foreground/50">Designation:</span> {details?.designation || '-'}</div>
+            <div><span className="text-foreground/50">Email:</span> {details?.email || '-'}</div>
+            <div><span className="text-foreground/50">Mobile:</span> {details?.mobile || '-'}</div>
+          </div>
+        </div>
+        <button
+          className="group flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-foreground hover:bg-white/5"
+          onClick={() => { setOpen(false); onMyJobs?.(); }}
+          role="menuitem"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-brand-600 group-hover:scale-125 transition-transform" />
+          My Jobs
+        </button>
+        <button
+          className="group flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-red-400 hover:bg-white/5 hover:text-red-300"
+          onClick={() => { setOpen(false); onLogout?.(); }}
+          role="menuitem"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-red-600 group-hover:scale-125 transition-transform" />
+          Logout
+        </button>
+      </div>
+    </div>
+  );
+};
