@@ -109,9 +109,9 @@ const ConfidentialData = () => {
       const base = `${BASE_URL}/api/recruitment`;
       let url = "";
       if (view === 'demo') {
-        url = `${base}/parsed-profiles/top-ctc?companyId=${encodeURIComponent(chosenId)}${chosenName ? `&companyName=${encodeURIComponent(chosenName)}` : ''}`;
+        url = `${base}/parsed-profiles/top-ctc?companyId=${encodeURIComponent(chosenId)}${chosenName ? `&companyName=${encodeURIComponent(chosenName)}` : ''}${userEmail ? `&email=${encodeURIComponent(userEmail)}` : ''}`;
       } else {
-        url = `${base}/parsed-profiles/all-alpha?companyId=${encodeURIComponent(chosenId)}${chosenName ? `&companyName=${encodeURIComponent(chosenName)}` : ''}`;
+        url = `${base}/parsed-profiles/all-alpha?companyId=${encodeURIComponent(chosenId)}${chosenName ? `&companyName=${encodeURIComponent(chosenName)}` : ''}${userEmail ? `&email=${encodeURIComponent(userEmail)}` : ''}`;
       }
       const resp = await fetch(url, { credentials: 'include' });
       const data = await resp.json().catch(() => ({}));
