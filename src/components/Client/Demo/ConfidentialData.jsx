@@ -394,7 +394,7 @@ const ConfidentialData = () => {
         {currentView && (
           <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 shadow-xl"> {/* Darker table container */}
             <div className="mb-3 flex items-center justify-between">
-              <div className="text-sm font-semibold text-slate-200">{currentView === 'demo' ? '' : 'All Profiles (Service)'}</div>
+              <div className="text-sm font-semibold text-slate-200">{currentView === 'demo' ? '' : ''}</div>
               <button
                 onClick={() => {
                   // refetch with current selection if any
