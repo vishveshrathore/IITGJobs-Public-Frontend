@@ -15,6 +15,8 @@ const ConfidentialData = () => {
   const [open, setOpen] = useState(false);
   const [targetPath, setTargetPath] = useState("");
   const [companies, setCompanies] = useState([]);
+  const [companySearch, setCompanySearch] = useState("");
+  const [companyDropdownOpen, setCompanyDropdownOpen] = useState(false);
   const [companiesLoading, setCompaniesLoading] = useState(false);
   const [companyId, setCompanyId] = useState("");
   const [otp, setOtp] = useState("");
@@ -45,6 +47,17 @@ const ConfidentialData = () => {
     const d4 = new Date(baseMs - 21 * dayMs);
     return [fmt.format(d1), fmt.format(d2), fmt.format(d3), fmt.format(d4)];
   }, [serverNow]);
+  const filteredCompanies = React.useMemo(
+    () => {
+      const q = companySearch.trim().toLowerCase();
+      if (!q) return companies;
+      return companies.filter((c) => {
+        const name = (c.CompanyName || c.companyName || c.name || '').toLowerCase();
+        return name.startsWith(q);
+      });
+    },
+    [companies, companySearch]
+  );
 
   useEffect(() => {
     const loadTime = async () => {
@@ -343,18 +356,45 @@ const ConfidentialData = () => {
             <h2 className="text-lg font-semibold text-white">Select Company & Verify Email</h2>
             <p className="mt-1 text-xs text-slate-400">Choose your company and verify via OTP to access Demo/Service.</p>
             <div className="mt-5 space-y-4">
-              <div>
+              <div className="relative">
                 <label className="block text-xs mb-1 text-slate-300">Company</label>
-                <select
-                  value={companyId}
-                  onChange={(e) => setCompanyId(e.target.value)}
-                  className="w-full text-sm px-3 py-2 rounded border border-slate-600 bg-slate-900 text-slate-200 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="" disabled className="bg-slate-700">{companiesLoading ? 'Loading companies…' : 'Select a company'}</option>
-                  {companies.map((c) => (
-                    <option key={c._id} value={c._id} className="bg-slate-700">{c.CompanyName || c.companyName || c.name || 'Unnamed Company'}</option>
-                  ))}
-                </select>
+                <input
+                  type="text"
+                  value={companySearch}
+                  onChange={(e) => {
+                    setCompanySearch(e.target.value);
+                    setCompanyDropdownOpen(true);
+                  }}
+                  onFocus={() => setCompanyDropdownOpen(true)}
+                  placeholder={companiesLoading ? 'Loading companies…' : "Start typing to search companies"}
+                  className="w-full text-sm px-3 py-2 rounded border border-slate-600 bg-slate-900 text-slate-200 placeholder-slate-500 focus:ring-blue-500 focus:border-blue-500"
+                />
+                {companyDropdownOpen && filteredCompanies.length > 0 && (
+                  <div className="absolute z-10 mt-1 max-h-52 w-full overflow-auto rounded-md border border-slate-700 bg-slate-900 shadow-lg">
+                    {filteredCompanies.map((c) => {
+                      const name = c.CompanyName || c.companyName || c.name || 'Unnamed Company';
+                      return (
+                        <button
+                          key={c._id}
+                          type="button"
+                          onClick={() => {
+                            setCompanyId(c._id);
+                            setCompanySearch(name);
+                            setCompanyDropdownOpen(false);
+                          }}
+                          className="flex w-full items-center px-3 py-2 text-left text-sm text-slate-100 hover:bg-slate-800"
+                        >
+                          {name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                {companyDropdownOpen && !companiesLoading && filteredCompanies.length === 0 && (
+                  <div className="absolute z-10 mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-400">
+                    No companies found.
+                  </div>
+                )}
               </div>
               {!globalVerified && (
                 <div className="flex items-center gap-2">
@@ -384,7 +424,16 @@ const ConfidentialData = () => {
               {message && <div className="text-xs text-slate-400">{message}</div>}
             </div>
             <div className="mt-5 flex justify-end gap-2">
-              <button onClick={() => setOpen(false)} className="px-3 py-2 text-sm rounded border border-slate-600 bg-slate-700 hover:bg-slate-600 text-slate-200">Close</button>
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  setCompanySearch("");
+                  setCompanyDropdownOpen(false);
+                }}
+                className="px-3 py-2 text-sm rounded border border-slate-600 bg-slate-700 hover:bg-slate-600 text-slate-200"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
