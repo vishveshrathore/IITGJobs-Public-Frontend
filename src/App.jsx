@@ -8,6 +8,8 @@ import OurTeam from "./components/Public/other/OurTeam";
 import SEO from "./components/common/SEO";
 import { PRIMARY_DOMAIN } from "./seo.config";
 
+
+
 const HomePage = lazy(() => import("./pages/HomePage"));
 const About = lazy(() => import("./pages/About"));
 const TrustedHR = lazy(() => import("./components/Public/Landing Page/TrustedHR"));
