@@ -91,7 +91,7 @@ const OurTeam = () => {
     <section className="relative isolate">
         
       {/* Background gradient */}
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-slate-900 via-slate-950 to-black" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-[#0F0F0F] via-slate-950 to-black" />
       <div
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-5 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.25),transparent_60%)]"
         aria-hidden

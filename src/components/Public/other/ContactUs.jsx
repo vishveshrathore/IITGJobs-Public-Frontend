@@ -114,7 +114,7 @@ const ContactForm = () => {
   };
   
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-900 via-slate-950 to-black">
+    <div className="min-h-screen flex flex-col text-foreground">
       <Navbar />
       <main className="flex-grow flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-6xl mx-auto">
@@ -271,7 +271,7 @@ const ContactForm = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting || !canSubmit}
-                      className={`w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:from-blue-500 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 sm:w-auto ${(isSubmitting || !canSubmit) ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:-translate-y-0.5'}`}
+                      className="btn btn-primary w-full sm:w-auto"
                     >
                       {isSubmitting ? (
                         <span className="flex items-center justify-center">
@@ -352,7 +352,7 @@ const ContactForm = () => {
               <button
                 type="button"
                 onClick={() => setSubmitStatus({ success: false, message: '' })}
-                className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+                className="btn btn-primary"
               >
                 Close
               </button>

@@ -28,9 +28,9 @@
   --color-surface: var(--color-surface-2);
 
   /* Background gradient stops (premium, low glare) */
-  --color-bg-1: #000000;
-  --color-bg-2: #0A0F1A;
-  --color-bg-3: #0E1423;
+  --color-bg-1: #0F0F0F;
+  --color-bg-2: #0F0F0F;
+  --color-bg-3: #0F0F0F;
 
   /* Overlays & effects */
   --overlay-60: rgba(0,0,0,0.60);

@@ -5,9 +5,10 @@ import Footer from "../../components/Public/Landing Page/Footer";
 import { useAuth } from "../../context/authcontext.jsx";
 import axios from "axios";
 import { BASE_URL } from "../../config";
+import EmployerStageSheet from "./EmployerStageSheet";
 
 const tabs = [
-  { key: "boolean", label: "Boolean Data Sheet" },
+  { key: "boolean", label: "Boolean Data Sheet (C)" },
   { key: "first", label: "First LineUp Sheet" },
   { key: "final", label: "Final Lineup Sheet" },
   { key: "interview", label: "Interview Sheet" },
@@ -16,14 +17,17 @@ const tabs = [
 ];
 
 const Stat = ({ title, value }) => (
-  <div className="rounded-lg border border-border bg-surface p-3">
-    <div className="text-xs text-muted">{title}</div>
-    <div className="text-base font-semibold">{value ?? "-"}</div>
+  <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-white/7 via-transparent to-white/5 px-4 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.35)]">
+    <div className="text-[11px] uppercase tracking-[0.2em] text-muted">{title}</div>
+    <div className="mt-1 text-xl font-semibold text-foreground">{value ?? "-"}</div>
+    <div className="pointer-events-none absolute inset-px rounded-2xl border border-white/5" />
   </div>
 );
 
 const Pill = ({ children }) => (
-  <span className="px-2 py-0.5 text-[11px] rounded-full border border-border bg-surface-2 text-foreground/80">{children}</span>
+  <span className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-semibold tracking-wide uppercase rounded-full border border-white/10 bg-white/5 text-foreground/80 backdrop-blur">
+    {children}
+  </span>
 );
 
 const JobDetails = () => {
@@ -38,19 +42,15 @@ const JobDetails = () => {
   useEffect(() => {
     if (state?.job) return;
     const load = async () => {
-      if (!user?.id) return;
       setLoading(true);
       setError("");
       try {
         const token = getToken?.();
-        const { data } = await axios.get(`${BASE_URL}/api/recruitment/post-job/${user.id}`, {
+        const { data } = await axios.get(`${BASE_URL}/api/recruitment/post-job/by-id/${id}`, {
           withCredentials: true,
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
-        const list = Array.isArray(data?.data) ? data.data : [];
-        const found = list.find(j => String(j?._id) === String(id));
-        setJob(found || null);
-        if (!found) setError("Job not found");
+        setJob(data?.data || null);
       } catch (e) {
         setError(e?.response?.data?.message || e?.message || "Failed to load job");
       } finally {
@@ -61,17 +61,65 @@ const JobDetails = () => {
   }, [state?.job, id, user?.id, getToken]);
 
   const org = job?.organisation || {};
-  const companyName = org.companyName || org.CompanyName || org.name || org || "-";
+  const companyName = (() => {
+    // Prefer backend-computed organisationName when present
+    if (job?.organisationName) return job.organisationName;
+
+    const orgVal = job?.organisation;
+    if (orgVal === "__other__") return job?.organisationOther || "-";
+    if (orgVal && typeof orgVal === "object") {
+      return orgVal.companyName || orgVal.CompanyName || orgVal.name || "-";
+    }
+    if (typeof orgVal === "string") {
+      // If the string looks like an ObjectId, fall back to organisationOther or '-'
+      if (/^[0-9a-fA-F]{24}$/.test(orgVal)) {
+        return job?.organisationOther || "-";
+      }
+      return orgVal.trim() || "-";
+    }
+    return "-";
+  })();
+
+  const locationDisplay = useMemo(() => {
+    if (job?.jobState && job?.jobCity) {
+      const city = job.jobCity === "__other__" ? job.jobCityOther || "" : job.jobCity;
+      return city ? `${city}, ${job.jobState}` : job.jobState;
+    }
+    return job?.jobLocation || "-";
+  }, [job]);
+
   const ctcUpper = useMemo(() => {
     const v = job?.ctcUpper;
-    if (typeof v === "number") return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(v);
+    const num = typeof v === "string" ? Number(v.replace(/[^\d]/g, "")) : v;
+    if (!isNaN(num) && num > 0) {
+      return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(num);
+    }
     return v ?? "-";
   }, [job?.ctcUpper]);
 
+  const stageKeyForTab = (key) => {
+    switch (key) {
+      case "boolean":
+        return "BooleanDataSheet(C)";
+      case "first":
+        return "FirstLineup";
+      case "final":
+        return "FinalLineup";
+      case "interview":
+        return "InterviewStatus";
+      case "selection":
+        return "Selection";
+      case "joining":
+        return "JoiningStatus";
+      default:
+        return "BooleanDataSheet";
+    }
+  };
+
   return (
-    <div className="min-h-screen text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-4">
           <h1 className="text-2xl font-semibold">Position Details</h1>
           <p className="text-sm text-muted">Comprehensive view and actions for this position.</p>
@@ -82,7 +130,7 @@ const JobDetails = () => {
         )}
 
         {/* Summary Card */}
-        <div className="rounded-2xl border border-border bg-surface shadow-sm overflow-hidden">
+        <div className="rounded-2xl border border-border bg-surface shadow-sm overflow-hidden w-full">
           <div className="p-5 border-b border-border bg-surface-2">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               <div>
@@ -90,15 +138,17 @@ const JobDetails = () => {
                 <div className="mt-0.5 text-xl font-semibold">{job?.position || "-"}</div>
                 <div className="mt-1 flex flex-wrap gap-2">
                   <Pill>{job?.department || "Department"}</Pill>
-                  <Pill>{job?.jobLocation || "Location"}</Pill>
+                  <Pill>{locationDisplay}</Pill>
                   <Pill>{job?.level || "Level"}</Pill>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-[260px]">
-                <Stat title="Openings" value={job?.positionsCount} />
-                <Stat title="Experience" value={[job?.expFrom, job?.expTo].filter(Boolean).join(" – ") || "-"} />
-                <Stat title="CTC Upper" value={ctcUpper} />
-                <Stat title="Created" value={job?.createdAt ? new Date(job.createdAt).toLocaleDateString() : "-"} />
+              <div className="flex items-center gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-[260px]">
+                  <Stat title="Openings" value={job?.positionsCount} />
+                  <Stat title="Experience" value={[job?.expFrom, job?.expTo].filter(Boolean).join(" – ") || "-"} />
+                  <Stat title="CTC Upper" value={ctcUpper} />
+                  <Stat title="Created" value={job?.createdAt ? new Date(job.createdAt).toLocaleDateString() : "-"} />
+                </div>
               </div>
             </div>
           </div>
@@ -111,7 +161,11 @@ const JobDetails = () => {
                   key={t.key}
                   type="button"
                   onClick={() => setActive(t.key)}
-                  className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition ${active===t.key ? 'bg-primary text-primary-foreground border-primary' : 'bg-surface border-border text-foreground/80 hover:bg-white/5'}`}
+                  className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition ${
+                    active === t.key
+                      ? 'bg-brand-600 text-white border-brand-500'
+                      : 'bg-surface border-border text-foreground/80 hover:bg-white/5'
+                  }`}
                 >
                   {t.label}
                 </button>
@@ -125,42 +179,11 @@ const JobDetails = () => {
               <div className="text-sm text-muted">Loading…</div>
             ) : (
               <div className="rounded-xl border border-border bg-surface p-4 min-h-[40vh] text-sm">
-                {active === "boolean" && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Boolean Data Sheet</h3>
-                    <p className="text-muted">Manage boolean dataset and parsed profile pipelines here.</p>
-                  </div>
-                )}
-                {active === "first" && (
-                  <div>
-                    <h3 className="font-semibold mb-2">First LineUp Sheet</h3>
-                    <p className="text-muted">Capture first lineup candidates and outcomes.</p>
-                  </div>
-                )}
-                {active === "final" && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Final Lineup Sheet</h3>
-                    <p className="text-muted">Maintain final lineup readiness and approvals.</p>
-                  </div>
-                )}
-                {active === "interview" && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Interview Sheet</h3>
-                    <p className="text-muted">Track interview details, panels and feedback.</p>
-                  </div>
-                )}
-                {active === "selection" && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Selection Sheet</h3>
-                    <p className="text-muted">Record selected candidates, offers and remarks.</p>
-                  </div>
-                )}
-                {active === "joining" && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Joining Status</h3>
-                    <p className="text-muted">Monitor joining progress and onboarding status.</p>
-                  </div>
-                )}
+                <EmployerStageSheet
+                  job={job}
+                  stageKey={stageKeyForTab(active)}
+                  title={tabs.find((t) => t.key === active)?.label || "Stage"}
+                />
               </div>
             )}
           </div>

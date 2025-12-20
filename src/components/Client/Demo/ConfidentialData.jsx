@@ -262,12 +262,12 @@ const ConfidentialData = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-slate-100">
+    <div className="min-h-screen text-foreground">
       <div className="sticky top-0 z-10 border-b border-slate-800 bg-slate-900/70 px-4 py-3 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <button
             onClick={() => navigate('/attrition-grid')}
-            className="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-200 hover:bg-slate-800"
+            className="btn btn-secondary text-sm"
           >
             ← Back
           </button>
@@ -312,7 +312,7 @@ const ConfidentialData = () => {
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={() => proceed('/client/demo', true)}
-                  className="px-3 py-1.5 text-xs rounded border border-blue-600 bg-blue-600 text-white hover:bg-blue-500"
+                  className="btn btn-primary text-xs"
                 >
                   Get Report
                 </button>
@@ -341,7 +341,7 @@ const ConfidentialData = () => {
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={() => proceed('/client/service', true)}
-                  className="px-3 py-1.5 text-xs rounded border border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-500"
+                  className="btn btn-primary text-xs"
                 >
                   Get Report
                 </button>
@@ -401,7 +401,7 @@ const ConfidentialData = () => {
                   <button
                     onClick={sendOtp}
                     disabled={!companyId || !userEmail || sending}
-                    className={`text-sm px-3 py-2 rounded transition-colors ${(!companyId || !userEmail || sending) ? 'bg-blue-800/60 cursor-not-allowed text-slate-400' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
+                    className="btn btn-primary text-sm"
                   >
                     {sending ? 'Sending…' : 'Send OTP'}
                   </button>
@@ -415,7 +415,7 @@ const ConfidentialData = () => {
                   <button
                     onClick={verifyOtp}
                     disabled={!otp || !companyId || !userEmail || verifying}
-                    className={`text-sm px-3 py-2 rounded transition-colors ${(!otp || !companyId || !userEmail || verifying) ? 'bg-emerald-800/60 cursor-not-allowed text-slate-400' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
+                    className="btn btn-primary text-sm"
                   >
                     {verifying ? 'Submitting...' : 'Submit'}
                   </button>
@@ -430,7 +430,7 @@ const ConfidentialData = () => {
                   setCompanySearch("");
                   setCompanyDropdownOpen(false);
                 }}
-                className="px-3 py-2 text-sm rounded border border-slate-600 bg-slate-700 hover:bg-slate-600 text-slate-200"
+                className="btn btn-secondary text-sm"
               >
                 Close
               </button>
@@ -453,7 +453,7 @@ const ConfidentialData = () => {
                   const cname = comp?.CompanyName || comp?.companyName || comp?.name || '';
                   if (chosen) fetchData(currentView, chosen, cname);
                 }}
-                className="rounded border border-slate-700 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700"
+                className="btn btn-secondary text-xs"
               >
                 Refresh
               </button>

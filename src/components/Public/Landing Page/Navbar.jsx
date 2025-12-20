@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/authcontext.jsx";
 
@@ -19,7 +19,7 @@ const navConfig = [
     label: "Jobs",
     dropdown: [
       { label: "Post Resume", href: "/application-form" },
-      
+      { label: "Job Openings", href: "/job-openings" },
     ],
   },
   {
@@ -57,6 +57,7 @@ function useOnClickOutside(ref, handler) {
 
 // ✅ Dropdown (Desktop)
 const Dropdown = ({ label, items }) => {
+  if (!items?.length) return null;
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   useOnClickOutside(ref, () => setOpen(false));
@@ -166,6 +167,17 @@ const Navbar = () => {
   const location = useLocation();
   const { isAuthenticated, isCorporate, user, logout } = useAuth();
 
+  const computedNavItems = useMemo(() => {
+    if (!(isAuthenticated && isCorporate)) return navConfig;
+    return navConfig.map((item) => {
+      if (item.label !== "Employer") return item;
+      const filtered = item.dropdown?.filter(
+        (entry) => entry.label !== "Employer Login" && entry.label !== "Employer Signup"
+      );
+      return { ...item, dropdown: filtered };
+    });
+  }, [isAuthenticated, isCorporate]);
+
   // Smooth scroll
   const scrollToId = (id) => {
     if (!id) return;
@@ -195,19 +207,18 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, []);
 
+  const navShellClass = scrolled
+    ? "border-white/15 bg-[rgba(5,8,20,0.9)] shadow-[0_20px_60px_rgba(2,6,23,0.55)]"
+    : "border-white/10 bg-[rgba(5,8,20,0.75)] shadow-[0_14px_40px_rgba(2,6,23,0.45)]";
+
   return (
-    <header
-      className={classNames(
-        "sticky top-0 z-50 w-full backdrop-blur-xl border-b",
-        scrolled ? "border-border shadow" : "border-border"
-      )}
-      style={{
-        background: scrolled
-          ? 'linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0.35))'
-          : 'linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.25))'
-      }}
-    >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
+    <header className="sticky top-0 z-50 px-3 py-3 backdrop-blur-sm bg-gradient-to-b from-black/40 via-black/10 to-transparent">
+      <nav
+        className={classNames(
+          "mx-auto flex max-w-7xl items-center justify-between rounded-2xl border px-5 py-3 transition-all duration-300 backdrop-blur-xl",
+          navShellClass
+        )}
+      >
         {/* ✅ Brand */}
         <button onClick={() => scrollToId("home")} className="group flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface ring-1 shadow-sm">
@@ -225,7 +236,7 @@ const Navbar = () => {
 
         {/* ✅ Desktop Menu */}
         <div className="hidden lg:flex items-center gap-2">
-          {navConfig.map((item) =>
+          {computedNavItems.map((item) =>
             item.dropdown ? (
               <Dropdown key={item.label} label={item.label} items={item.dropdown} />
             ) : item.href ? (

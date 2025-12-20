@@ -60,7 +60,7 @@ const AttritationGrid = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-slate-100">
+    <div className="min-h-screen text-foreground">
       <Navbar />
       <section className="relative py-10">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -70,13 +70,13 @@ const AttritationGrid = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigate('/confidential-data')}
-                  className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-semibold hover:bg-emerald-500"
+                  className="btn btn-primary text-sm"
                 >
                   Access Confidential Data
                 </button>
                 <button
                   onClick={onLogout}
-                  className="rounded-lg bg-slate-700 px-3 py-1.5 text-sm hover:bg-slate-600"
+                  className="btn btn-secondary text-sm"
                 >
                   Logout
                 </button>
@@ -84,7 +84,7 @@ const AttritationGrid = () => {
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold hover:bg-indigo-500"
+                className="btn btn-primary text-sm"
               >
                 Login
               </button>
@@ -121,7 +121,7 @@ const AttritationGrid = () => {
                   <p className="mb-4 text-sm text-slate-300">Please login to access confidential data</p>
                   <button
                     onClick={() => setShowLogin(true)}
-                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
+                    className="btn btn-primary text-sm"
                   >
                     Login
                   </button>
@@ -169,14 +169,14 @@ const AttritationGrid = () => {
                 <button
                   type="button"
                   onClick={() => setShowLogin(false)}
-                  className="rounded-lg px-3 py-2 text-sm text-slate-300 hover:text-white"
+                  className="btn btn-secondary text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-60"
+                  className="btn btn-primary text-sm"
                 >
                   {loading ? "Logging in..." : "Login"}
                 </button>
