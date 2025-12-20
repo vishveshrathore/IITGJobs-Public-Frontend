@@ -106,7 +106,7 @@ const JobDetails = () => {
       case "final":
         return "FinalLineup";
       case "interview":
-        return "InterviewStatus";
+        return "InterviewSheet";
       case "selection":
         return "Selection";
       case "joining":
