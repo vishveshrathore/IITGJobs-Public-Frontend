@@ -26,7 +26,7 @@ const AttritionDemoService = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-slate-950 to-slate-900 text-slate-100">
+    <div className="min-h-screen text-foreground">
       <Navbar />
       <motion.section
         className="relative py-16"
@@ -56,7 +56,7 @@ const AttritionDemoService = () => {
               </p>
             </motion.div>
 
-            {/* --- Updated Buttons Group --- */}
+            {/* --- CTA Buttons Group --- */}
             <motion.div
               variants={fadeUp}
               custom={1}
@@ -65,7 +65,7 @@ const AttritionDemoService = () => {
               {/* Primary Button: Request a Demo */}
               <button
                 onClick={handleDemoClick}
-                className="inline-flex items-center justify-center rounded-full border border-transparent bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-600/25 ring-1 ring-indigo-500 transition hover:translate-y-[-1px] hover:shadow-xl hover:scale-[1.02] hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
+                className="btn btn-primary"
               >
                 Request a Demo
               </button>
@@ -73,7 +73,7 @@ const AttritionDemoService = () => {
               {/* Secondary Outline Button: Contact Sales */}
               <button
                 onClick={handleContactClick}
-                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/15 hover:shadow-lg hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                className="btn btn-secondary"
               >
                 Demo
               </button>

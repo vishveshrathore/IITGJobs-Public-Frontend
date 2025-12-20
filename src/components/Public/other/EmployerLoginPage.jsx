@@ -84,9 +84,9 @@ const EmployerLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100">
+    <div className="min-h-screen text-foreground">
       <Navbar />
-      <section className="relative py-16 bg-slate-900">
+      <section className="relative py-16">
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-1 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-900" />
         <div className="mx-auto max-w-sm px-4 sm:px-6">
           <h1 className="text-center text-2xl font-bold tracking-tight text-white sm:text-3xl">Employer Login</h1>
@@ -130,7 +130,7 @@ const EmployerLoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="btn btn-primary w-full"
             >
               {loading ? 'Signing in…' : 'Sign in'}
             </button>

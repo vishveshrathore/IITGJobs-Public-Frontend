@@ -109,7 +109,7 @@ const Footer = () => {
                 <span>LinkedIn</span>
               </a>
               <a
-                href="https://www.instagram.com/iitg_job?igsh=aHA1NWs0ZHAzNm9s"
+                href="https://www.instagram.com/iitgjobspvt.ltd?igsh=ejBtc3lqeGRjYndk"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 badge-link"

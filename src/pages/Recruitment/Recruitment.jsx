@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Public/Landing Page/Navbar";
@@ -13,6 +13,60 @@ const Recruitment = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [jobs, setJobs] = useState([]);
+
+  const getOrganisationName = (job) => {
+    // Prefer backend-computed organisationName when present
+    if (job?.organisationName) return job.organisationName;
+
+    const org = job?.organisation;
+
+    // If explicitly marked as other, use the free-text Other value
+    if (org === "__other__") {
+      return job?.organisationOther || "-";
+    }
+
+    // If we have a populated organisation object from backend (RecruitmentCompany)
+    if (org && typeof org === "object") {
+      return org.companyName || org.CompanyName || org.name || "-";
+    }
+
+    if (typeof org === "string") {
+      // If the string still looks like a bare ObjectId and we have no name, fall back to organisationOther or '-'
+      if (/^[0-9a-fA-F]{24}$/.test(org)) {
+        return job?.organisationOther || "-";
+      }
+      // Normal string company name stored directly on job
+      return org.trim() || "-";
+    }
+
+    return "-";
+  };
+
+  const getLocationDisplay = (job) => {
+    if (job?.jobState && job?.jobCity) {
+      const city = job.jobCity === "__other__" ? job.jobCityOther || "" : job.jobCity;
+      return city ? `${city}, ${job.jobState}` : job.jobState;
+    }
+    return job?.jobLocation || "-";
+  };
+
+  const getLevelDisplay = (job) => {
+    if (job?.level === "Other") return job?.levelOther || job.level || "-";
+    return job?.level || "-";
+  };
+
+  const formatCTC = (value) => {
+    const v = value;
+    const num = typeof v === "string" ? Number(v.replace(/[^\d]/g, "")) : v;
+    if (!isNaN(num) && num > 0) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(num);
+    }
+    return v ?? "-";
+  };
 
   const fetchJobs = async () => {
     if (!user?.id) return;
@@ -56,7 +110,7 @@ const Recruitment = () => {
           <button
             onClick={() => fetchJobs()}
             disabled={loading}
-            className="rounded-md border border-border px-3 py-2 text-sm hover:bg-white/5 disabled:opacity-60"
+            className="btn btn-secondary text-sm"
           >
             {loading ? "Refreshing…" : "Refresh"}
           </button>
@@ -94,10 +148,10 @@ const Recruitment = () => {
                 jobs.map((j) => (
                   <tr key={j._id} className="border-b border-border hover:bg-white/5">
                     <td className="px-4 py-3 font-medium">{j.position || "-"}</td>
-                    <td className="px-4 py-3">{j.organisation?.companyName || j.organisation?.CompanyName || j.organisation || "-"}</td>
-                    <td className="px-4 py-3">{j.level || "-"}</td>
-                    <td className="px-4 py-3">{j.jobLocation || "-"}</td>
-                    <td className="px-4 py-3">{j.ctcUpper ?? "-"}</td>
+                    <td className="px-4 py-3">{getOrganisationName(j)}</td>
+                    <td className="px-4 py-3">{getLevelDisplay(j)}</td>
+                    <td className="px-4 py-3">{getLocationDisplay(j)}</td>
+                    <td className="px-4 py-3">{formatCTC(j.ctcUpper)}</td>
                     <td className="px-4 py-3">{j.createdAt ? new Date(j.createdAt).toLocaleString() : "-"}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -107,9 +161,6 @@ const Recruitment = () => {
                         >
                           View
                         </button>
-                        <button className="btn btn-secondary text-xs px-2 py-1" disabled>Edit</button>
-                        <button className="btn btn-outline text-xs px-2 py-1" disabled>Close</button>
-                        <button className="btn btn-outline text-xs px-2 py-1" disabled>Delete</button>
                       </div>
                     </td>
                   </tr>

@@ -180,7 +180,7 @@ const HeroBanner = () => {
           <a
             ref={ctaSecondaryRef}
             href="/contact-us"
-            className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/15 hover:shadow-lg hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="btn btn-primary rounded-xl px-6 py-3 text-base"
           >
             Contact Us
           </a>

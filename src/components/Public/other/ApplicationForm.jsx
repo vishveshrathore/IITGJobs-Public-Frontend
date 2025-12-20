@@ -544,7 +544,7 @@ export default function ApplicationForm() {
         <button
           type="button"
           onClick={() => { setNavDir(-1); setStep((s) => Math.max(0, s - 1)) }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-600 bg-slate-800/60 text-slate-200 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn btn-secondary"
           disabled={step === 0 || loading}
           aria-label="Go to previous step"
         >
@@ -554,7 +554,7 @@ export default function ApplicationForm() {
           <button
             type="button"
             onClick={() => { setNavDir(1); setStep((s) => Math.min(steps.length - 1, s + 1)) }}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary"
             disabled={loading}
             aria-label="Go to next step"
           >
@@ -564,7 +564,7 @@ export default function ApplicationForm() {
           <button
             type="button"
             onClick={handleSubmit}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="btn btn-primary"
             disabled={loading}
             aria-busy={loading}
             aria-label="Submit application"
@@ -580,7 +580,7 @@ export default function ApplicationForm() {
   return (
     <>
     <Navbar/>
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center py-8 px-4">
+    <div className="min-h-screen flex flex-col items-center py-8 px-4 text-foreground">
       
       {submitted ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-6">
@@ -599,11 +599,11 @@ export default function ApplicationForm() {
                   if (resumeRef.current) resumeRef.current.value = ""
                   if (photoRef.current) photoRef.current.value = ""
                 }}
-                className="px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
+                className="btn btn-primary"
               >
                 Submit Another
               </button>
-              <a href="/" className="px-6 py-2 rounded-lg border border-slate-600 text-slate-200 hover:bg-slate-700 transition-colors">
+              <a href="/" className="btn btn-secondary">
                 Go Home
               </a>
             </div>

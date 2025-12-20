@@ -236,9 +236,9 @@ const EmployerSignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-slate-100">
+    <div className="min-h-screen text-foreground">
       <Navbar />
-      <section className="relative py-16 bg-slate-900">
+      <section className="relative py-16">
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-1 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-900" />
         {stage === 'form' && (
         <div className="mx-auto max-w-3xl px-4 sm:px-6 p-8 rounded-2xl bg-slate-800 shadow-2xl shadow-indigo-900/40">
@@ -444,7 +444,7 @@ const EmployerSignupPage = () => {
               <button
                 disabled={!canSubmit || loading}
                 type="submit"
-                className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:scale-[1.01] hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="btn btn-primary"
               >
                 {loading ? "Submitting..." : "Submit For Demo"}
               </button>
@@ -478,14 +478,14 @@ const EmployerSignupPage = () => {
                   <button
                     disabled={verifying || otp.trim().length < 4}
                     type="submit"
-                    className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:scale-[1.01] hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="btn btn-primary"
                   >
                     {verifying ? "Verifying..." : "Verify OTP"}
                   </button>
                   <button
                     type="button"
                     onClick={() => { setStage('form'); setOtp(""); setError(""); }}
-                    className="text-sm text-slate-300 hover:text-white"
+                    className="btn btn-primary"
                   >
                     Change email
                   </button>
@@ -517,7 +517,7 @@ const EmployerSignupPage = () => {
                     setSuccessMsg("");
                   }
                 }}
-                className="mt-4 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+                className="btn btn-primary mt-4"
               >
                 {verified ? 'Go to Home' : 'Close'}
               </button>
