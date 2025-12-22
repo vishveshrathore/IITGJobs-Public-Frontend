@@ -303,6 +303,8 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
   const [deletingId, setDeletingId] = useState("");
   const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
   const [expandSkills, setExpandSkills] = useState({});
+  const [expandPreviousRoles, setExpandPreviousRoles] = useState({});
+  const [expandEducation, setExpandEducation] = useState({});
 
   const companyName = useMemo(() => {
     if (!job) return "-";
@@ -633,6 +635,8 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
   };
 
   const toggleSkills = (id) => setExpandSkills((prev) => ({ ...prev, [id]: !prev[id] }));
+  const togglePreviousRoles = (id) => setExpandPreviousRoles((prev) => ({ ...prev, [id]: !prev[id] }));
+  const toggleEducation = (id) => setExpandEducation((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const deleteResume = async (profileId) => {
     if (!profileId) return;
@@ -817,7 +821,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                   <ColumnFilterHeader
                     label="Name"
                     columnKey="name"
-                    profiles={profiles}
+                    profiles={displayedProfiles}
                     columnFilters={columnFilters}
                     setColumnFilters={setColumnFilters}
                     activeFilter={activeFilter}
@@ -830,7 +834,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                   <ColumnFilterHeader
                     label="Experience"
                     columnKey="experience"
-                    profiles={profiles}
+                    profiles={displayedProfiles}
                     columnFilters={columnFilters}
                     setColumnFilters={setColumnFilters}
                     activeFilter={activeFilter}
@@ -843,7 +847,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                   <ColumnFilterHeader
                     label="CTC"
                     columnKey="ctc"
-                    profiles={profiles}
+                    profiles={displayedProfiles}
                     columnFilters={columnFilters}
                     setColumnFilters={setColumnFilters}
                     activeFilter={activeFilter}
@@ -856,7 +860,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                   <ColumnFilterHeader
                     label="Location"
                     columnKey="location"
-                    profiles={profiles}
+                    profiles={displayedProfiles}
                     columnFilters={columnFilters}
                     setColumnFilters={setColumnFilters}
                     activeFilter={activeFilter}
@@ -869,7 +873,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                   <ColumnFilterHeader
                     label="Current Role"
                     columnKey="current_designation"
-                    profiles={profiles}
+                    profiles={displayedProfiles}
                     columnFilters={columnFilters}
                     setColumnFilters={setColumnFilters}
                     activeFilter={activeFilter}
@@ -882,7 +886,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                   <ColumnFilterHeader
                     label="Current Company"
                     columnKey="current_company"
-                    profiles={profiles}
+                    profiles={displayedProfiles}
                     columnFilters={columnFilters}
                     setColumnFilters={setColumnFilters}
                     activeFilter={activeFilter}
@@ -974,15 +978,43 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                       className={`${density === "compact" ? "px-2 py-1" : "px-3 py-2"} border-b align-top break-words whitespace-normal`}
                     >
                       {Array.isArray(p?.previous_roles)
-                        ? renderChips(
-                            p.previous_roles.map((r) =>
-                              (r.designation || r.company)
-                                ? `${r.designation || ""}${r.company ? " at " + r.company : ""}`.trim()
-                                : typeof r === "object"
-                                ? JSON.stringify(r)
-                                : String(r)
-                            )
-                          )
+                        ? (() => {
+                            const labels = p.previous_roles
+                              .map((r) =>
+                                r && (r.designation || r.company)
+                                  ? `${r.designation || ""}${r.company ? " at " + r.company : ""}`.trim()
+                                  : typeof r === "object"
+                                  ? JSON.stringify(r)
+                                  : String(r)
+                              )
+                              .filter(Boolean);
+                            if (!labels.length) return renderMixed(p?.previous_roles) || "-";
+                            const expanded = !!expandPreviousRoles[p._id];
+                            const shown = expanded ? labels : labels.slice(0, 3);
+                            return (
+                              <div className="flex flex-wrap items-center gap-1 max-w-[480px]">
+                                {renderChips(shown)}
+                                {labels.length > shown.length && (
+                                  <button
+                                    type="button"
+                                    onClick={() => togglePreviousRoles(p._id)}
+                                    className="px-2 py-0.5 text-[11px] rounded border bg-background hover:bg-surface"
+                                  >
+                                    +{labels.length - shown.length} more
+                                  </button>
+                                )}
+                                {expanded && labels.length > 3 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => togglePreviousRoles(p._id)}
+                                    className="px-2 py-0.5 text-[11px] rounded border bg-background hover:bg-surface"
+                                  >
+                                    Show less
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })()
                         : renderMixed(p?.previous_roles) || "-"}
                     </td>
                     <td
@@ -991,28 +1023,58 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                       {(() => {
                         const education = p?.education;
                         if (!education) return "-";
-                        
+
                         let filteredEducation;
                         if (Array.isArray(education)) {
-                          filteredEducation = education.filter(item => {
-                            const str = typeof item === "object" ? 
-                              (item.name || item.degree || item.qualification || JSON.stringify(item)) : 
-                              String(item);
+                          filteredEducation = education.filter((item) => {
+                            const str =
+                              typeof item === "object"
+                                ? item.name || item.degree || item.qualification || JSON.stringify(item)
+                                : String(item);
                             return !str.toLowerCase().includes("iti");
                           });
                         } else {
-                          const str = typeof education === "object" ? 
-                            (education.name || education.degree || education.qualification || JSON.stringify(education)) : 
-                            String(education);
+                          const str =
+                            typeof education === "object"
+                              ? education.name || education.degree || education.qualification || JSON.stringify(education)
+                              : String(education);
                           if (str.toLowerCase().includes("iti")) {
                             return "-";
                           }
                           filteredEducation = education;
                         }
-                        
-                        return Array.isArray(filteredEducation) ? 
-                          renderChips(filteredEducation) : 
-                          renderMixed(filteredEducation) || "-";
+
+                        if (Array.isArray(filteredEducation)) {
+                          if (!filteredEducation.length) return "-";
+                          const expandedEdu = !!expandEducation[p._id];
+                          const arr = filteredEducation;
+                          const shownEdu = expandedEdu ? arr : arr.slice(0, 3);
+                          return (
+                            <div className="flex flex-wrap items-center gap-1 max-w-[480px]">
+                              {renderChips(shownEdu)}
+                              {arr.length > shownEdu.length && (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleEducation(p._id)}
+                                  className="px-2 py-0.5 text-[11px] rounded border bg-background hover:bg-surface"
+                                >
+                                  +{arr.length - shownEdu.length} more
+                                </button>
+                              )}
+                              {expandedEdu && arr.length > 3 && (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleEducation(p._id)}
+                                  className="px-2 py-0.5 text-[11px] rounded border bg-background hover:bg-surface"
+                                >
+                                  Show less
+                                </button>
+                              )}
+                            </div>
+                          );
+                        }
+
+                        return renderMixed(filteredEducation) || "-";
                       })()}
                     </td>
                     <td
@@ -1126,10 +1188,13 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                           );
                         }
 
+                        const lastRemark = last?.remark || "";
+
                         return (
-                          <div className="flex flex-col gap-2">
+                          <div className="flex flex-col gap-1">
                             <div className="flex flex-wrap items-center gap-2">
                               <button
+                                type="button"
                                 disabled={savingId === String(p._id)}
                                 onClick={() => submitDecision(p._id, "YES")}
                                 className={`inline-flex items-center gap-1 px-3.5 py-1.5 text-xs font-semibold rounded-full text-white shadow-sm transition ${
@@ -1153,6 +1218,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                                 </span>
                               </button>
                               <button
+                                type="button"
                                 disabled={savingId === String(p._id)}
                                 onClick={() => submitDecision(p._id, "NO")}
                                 className={`inline-flex items-center gap-1 px-3.5 py-1.5 text-xs font-semibold rounded-full text-white shadow-sm transition ${
@@ -1188,6 +1254,11 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                               placeholder="Add remark (visible with decision)"
                               className="w-full max-w-xs text-xs px-2 py-1 border rounded bg-background"
                             />
+                            {lastRemark && (
+                              <div className="text-[11px] text-muted mt-0.5 max-w-xs truncate" title={lastRemark}>
+                                Last remark: <span className="font-medium text-foreground">{lastRemark}</span>
+                              </div>
+                            )}
                           </div>
                         );
                       })()}
