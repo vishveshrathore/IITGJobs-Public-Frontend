@@ -8,12 +8,11 @@ import { BASE_URL } from "../../config";
 import EmployerStageSheet from "./EmployerStageSheet";
 
 const tabs = [
-  { key: "boolean", label: "Boolean Data Sheet (C)" },
-  { key: "first", label: "First LineUp Sheet" },
-  { key: "final", label: "Final Lineup Sheet" },
-  { key: "interview", label: "Interview Sheet" },
-  { key: "selection", label: "Selection Sheet" },
-  { key: "joining", label: "Joining Status" },
+  { key: "booleanC", label: "Boolean Data Sheet (C)" }, // 2
+  { key: "office", label: "First Lineup Sheet For Client ShortListing" }, // 5
+  { key: "finalLineup", label: "Final Lineup Sheet" }, // 6
+  { key: "status", label: "Interview Status" }, // 9
+  { key: "joiningStatus", label: "Joining Status" }, // 12
 ];
 
 const Stat = ({ title, value }) => (
@@ -36,7 +35,7 @@ const JobDetails = () => {
   const { user, getToken } = useAuth();
   const [job, setJob] = useState(state?.job || null);
   const [loading, setLoading] = useState(!state?.job);
-  const [active, setActive] = useState("boolean");
+  const [active, setActive] = useState("booleanC");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -99,20 +98,18 @@ const JobDetails = () => {
 
   const stageKeyForTab = (key) => {
     switch (key) {
-      case "boolean":
-        return "BooleanDataSheet(C)";
-      case "first":
-        return "FirstLineup";
-      case "final":
-        return "FinalLineup";
-      case "interview":
-        return "InterviewSheet";
-      case "selection":
-        return "Selection";
-      case "joining":
-        return "JoiningStatus";
+      case "booleanC":
+        return "BooleanDataSheet(C)"; // 2) Boolean Data Sheet (C)
+      case "office":
+        return "OfficeInterview"; // 5) First Lineup Sheet For Client ShortListing
+      case "finalLineup":
+        return "FinalLineup"; // 6) Final Lineup Sheet
+      case "status":
+        return "InterviewStatus"; // 9) Interview Status
+      case "joiningStatus":
+        return "JoiningStatus"; // 12) Joining Status
       default:
-        return "BooleanDataSheet";
+        return "BooleanDataSheet(C)";
     }
   };
 

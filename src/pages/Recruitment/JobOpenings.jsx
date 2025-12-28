@@ -12,6 +12,7 @@ const JobOpenings = () => {
   const [applySubmitting, setApplySubmitting] = useState(false);
   const [applyError, setApplyError] = useState("");
   const [applySuccessJobId, setApplySuccessJobId] = useState(null);
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [applyForm, setApplyForm] = useState({
     name: "",
     email: "",
@@ -73,9 +74,16 @@ const JobOpenings = () => {
   );
 
   const openApply = (jobId) => {
-    setApplyJobId((prev) => (prev === jobId ? null : jobId));
+    setApplyJobId(jobId);
     setApplyError("");
     setApplySuccessJobId(null);
+    setApplyModalOpen(true);
+  };
+
+  const closeApply = () => {
+    setApplyModalOpen(false);
+    setApplyJobId(null);
+    setApplyError("");
   };
 
   const onApplyChange = (e) => {
@@ -145,6 +153,8 @@ const JobOpenings = () => {
       setApplySubmitting(false);
     }
   };
+
+  const activeJob = sortedJobs.find((job) => String(job._id || "") === String(applyJobId || ""));
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -260,174 +270,218 @@ const JobOpenings = () => {
                     onClick={() => openApply(job._id)}
                     className="btn btn-primary text-sm"
                   >
-                    {applyJobId === job._id ? "Close Application Form" : "Apply Now"}
+                    Apply Now
                   </button>
-                  {applyJobId === job._id && (
-                    <form
-                      className="mt-2 space-y-2 border border-border rounded-lg p-3 bg-surface-2 text-xs"
-                      onSubmit={(e) => onApplySubmit(e, job._id)}
-                    >
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div>
-                          <label className="block mb-1">Full Name*</label>
-                          <input
-                            type="text"
-                            name="name"
-                            value={applyForm.name}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Email*</label>
-                          <input
-                            type="email"
-                            name="email"
-                            value={applyForm.email}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Mobile*</label>
-                          <input
-                            type="tel"
-                            name="mobile"
-                            value={applyForm.mobile}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Current Location</label>
-                          <input
-                            type="text"
-                            name="location"
-                            value={applyForm.location}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Total Experience</label>
-                          <input
-                            type="text"
-                            name="experience"
-                            value={applyForm.experience}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                            placeholder="e.g., 3 years"
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Current Designation</label>
-                          <input
-                            type="text"
-                            name="current_designation"
-                            value={applyForm.current_designation}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Current Company</label>
-                          <input
-                            type="text"
-                            name="current_company"
-                            value={applyForm.current_company}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Key Skills</label>
-                          <input
-                            type="text"
-                            name="skills"
-                            value={applyForm.skills}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                            placeholder="e.g., Sales, Excel, Communication"
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Previous Roles</label>
-                          <input
-                            type="text"
-                            name="previous_roles"
-                            value={applyForm.previous_roles}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                            placeholder="e.g., Sales Executive at ABC, Team Lead at XYZ"
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Education</label>
-                          <input
-                            type="text"
-                            name="education"
-                            value={applyForm.education}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                            placeholder="e.g., B.Com, MBA"
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Current CTC</label>
-                          <input
-                            type="text"
-                            name="ctc"
-                            value={applyForm.ctc}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                            placeholder="e.g., 450000"
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-1">Expected CTC</label>
-                          <input
-                            type="text"
-                            name="expected_ctc"
-                            value={applyForm.expected_ctc}
-                            onChange={onApplyChange}
-                            className="input w-full text-xs"
-                            placeholder="e.g., 550000"
-                          />
-                        </div>
-                        <div className="sm:col-span-2">
-                          <label className="block mb-1">Resume (PDF / DOC / DOCX)</label>
-                          <input
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={onResumeChange}
-                            className="input w-full text-xs"
-                          />
-                        </div>
-                      </div>
-                      {applyError && (
-                        <div className="text-red-400 text-[11px]">{applyError}</div>
-                      )}
-                      {applySuccessJobId === job._id && !applyError && (
-                        <div className="text-emerald-400 text-[11px]">Application submitted successfully.</div>
-                      )}
-                      <button
-                        type="submit"
-                        disabled={applySubmitting}
-                        className="mt-1 btn btn-primary text-xs"
-                      >
-                        {applySubmitting ? "Submitting…" : "Submit Application"}
-                      </button>
-                    </form>
-                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+      {applyModalOpen && applyJobId && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeApply();
+          }}
+        >
+          <div className="max-w-2xl w-full rounded-2xl bg-surface shadow-xl border border-border">
+            <div className="flex items-start justify-between px-4 py-3 border-b border-border">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Apply for</p>
+                <h2 className="text-base sm:text-lg font-semibold">
+                  {activeJob?.position || "Job Opening"}
+                </h2>
+                <p className="text-xs text-muted mt-0.5">
+                  {activeJob?.organisationName}
+                  {getLocationDisplay(activeJob) && (
+                    <>
+                      {" "}
+                      · {getLocationDisplay(activeJob)}
+                    </>
+                  )}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeApply}
+                className="text-xs text-muted hover:text-foreground"
+              >
+                ✕
+              </button>
+            </div>
+            <form
+              className="px-4 pt-3 pb-4 space-y-3 text-xs"
+              onSubmit={(e) => onApplySubmit(e, applyJobId)}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="block mb-1">Full Name*</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={applyForm.name}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Email*</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={applyForm.email}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Mobile*</label>
+                  <input
+                    type="tel"
+                    name="mobile"
+                    value={applyForm.mobile}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Current Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={applyForm.location}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Total Experience</label>
+                  <input
+                    type="text"
+                    name="experience"
+                    value={applyForm.experience}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                    placeholder="e.g., 3 years"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Current Designation</label>
+                  <input
+                    type="text"
+                    name="current_designation"
+                    value={applyForm.current_designation}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Current Company</label>
+                  <input
+                    type="text"
+                    name="current_company"
+                    value={applyForm.current_company}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Key Skills</label>
+                  <input
+                    type="text"
+                    name="skills"
+                    value={applyForm.skills}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                    placeholder="e.g., Sales, Excel, Communication"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Previous Roles</label>
+                  <input
+                    type="text"
+                    name="previous_roles"
+                    value={applyForm.previous_roles}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                    placeholder="e.g., Sales Executive at ABC, Team Lead at XYZ"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Education</label>
+                  <input
+                    type="text"
+                    name="education"
+                    value={applyForm.education}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                    placeholder="e.g., B.Com, MBA"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Current CTC</label>
+                  <input
+                    type="text"
+                    name="ctc"
+                    value={applyForm.ctc}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                    placeholder="e.g., 450000"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1">Expected CTC</label>
+                  <input
+                    type="text"
+                    name="expected_ctc"
+                    value={applyForm.expected_ctc}
+                    onChange={onApplyChange}
+                    className="input w-full text-xs"
+                    placeholder="e.g., 550000"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block mb-1">Resume (PDF / DOC / DOCX)</label>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={onResumeChange}
+                    className="input w-full text-xs"
+                  />
+                </div>
+              </div>
+              {applyError && (
+                <div className="text-red-400 text-[11px]">{applyError}</div>
+              )}
+              {applySuccessJobId === applyJobId && !applyError && (
+                <div className="text-emerald-400 text-[11px]">
+                  Application submitted successfully.
+                </div>
+              )}
+              <div className="flex justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={closeApply}
+                  className="btn btn-secondary text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={applySubmitting}
+                  className="btn btn-primary text-xs"
+                >
+                  {applySubmitting ? "Submitting…" : "Submit Application"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );

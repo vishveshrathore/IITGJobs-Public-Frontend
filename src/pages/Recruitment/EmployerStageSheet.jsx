@@ -66,6 +66,32 @@ const getColumnText = (p, key) => {
   }
 };
 
+const ShowMoreText = ({ text, maxChars = 120, className = "" }) => {
+  const [expanded, setExpanded] = React.useState(false);
+  const str = String(text || "").trim();
+  if (!str) return "-";
+  if (str.length <= maxChars) {
+    return <span className={className}>{str}</span>;
+  }
+  const display = expanded ? str : `${str.slice(0, maxChars).trimEnd()}…`;
+  const toggle = (e) => {
+    e.stopPropagation();
+    setExpanded((prev) => !prev);
+  };
+  return (
+    <span className={className}>
+      {display}{" "}
+      <button
+        type="button"
+        onClick={toggle}
+        className="ml-1 text-[11px] font-medium text-primary hover:underline"
+      >
+        {expanded ? "Show less" : "Show more"}
+      </button>
+    </span>
+  );
+};
+
 const ColumnFilterHeader = ({
   label,
   columnKey,
@@ -342,11 +368,11 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
   const [bulkSaving, setBulkSaving] = useState(false);
   const [remarkById, setRemarkById] = useState({});
   const [savingId, setSavingId] = useState("");
-  const [deletingId, setDeletingId] = useState("");
   const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
   const [expandSkills, setExpandSkills] = useState({});
   const [expandPreviousRoles, setExpandPreviousRoles] = useState({});
   const [expandEducation, setExpandEducation] = useState({});
+  const [expandLastRemark, setExpandLastRemark] = useState({});
 
   const companyName = useMemo(() => {
     if (!job) return "-";
@@ -728,35 +754,6 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
   const togglePreviousRoles = (id) => setExpandPreviousRoles((prev) => ({ ...prev, [id]: !prev[id] }));
   const toggleEducation = (id) => setExpandEducation((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const deleteResume = async (profileId) => {
-    if (!profileId) return;
-    if (typeof window !== "undefined") {
-      // Basic confirmation in browser
-      // eslint-disable-next-line no-alert
-      if (!window.confirm("Delete resume from Cloudinary for this candidate?")) return;
-    }
-    try {
-      setDeletingId(profileId);
-      const token = getToken?.();
-      await axios.delete(`${BASE_URL}/api/recruitment/post-job-profiles/resume/${profileId}`, {
-        withCredentials: true,
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
-      await refresh();
-      setToast({ visible: true, message: "Resume deleted", type: "success" });
-      setTimeout(() => setToast({ visible: false, message: "", type: "success" }), 2000);
-    } catch (e) {
-      setToast({
-        visible: true,
-        message: e?.response?.data?.message || e?.message || "Delete failed",
-        type: "error",
-      });
-      setTimeout(() => setToast({ visible: false, message: "", type: "error" }), 2500);
-    } finally {
-      setDeletingId("");
-    }
-  };
-
   const hasError = !!error;
 
   return (
@@ -996,7 +993,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
               {loading ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={`sk-${i}`} className="animate-pulse">
-                    {Array.from({ length: 16 }).map((__, j) => (
+                    {Array.from({ length: 13 }).map((__, j) => (
                       <td key={`skc-${i}-${j}`} className="px-3 py-2 border-b">
                         <div className="h-3 bg-muted rounded w-3/4" />
                       </td>
@@ -1005,7 +1002,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                 ))
               ) : displayedProfiles.length === 0 ? (
                 <tr>
-                  <td colSpan={16} className="px-3 py-10">
+                  <td colSpan={13} className="px-3 py-10">
                     <div className="flex flex-col items-center justify-center text-center">
                       <div className="w-10 h-10 rounded-full bg-surface-2 border flex items-center justify-center mb-2">
                         <svg viewBox="0 0 24 24" className="w-5 h-5 text-muted">
@@ -1059,7 +1056,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                       {p?.ctc || "-"}
                     </td>
                     <td className={`${density === "compact" ? "px-2 py-1" : "px-3 py-2"} border-b align-top`}>
-                      {p?.location || "-"}
+                      <ShowMoreText text={p?.location} maxChars={60} />
                     </td>
                     <td className={`${density === "compact" ? "px-2 py-1" : "px-3 py-2"} border-b align-top`}>
                       <span className="px-1.5 py-0.5 rounded text-[10px] border bg-surface-2 text-foreground/80 border-border">
@@ -1095,7 +1092,8 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                             )
                             .filter(Boolean);
 
-                          if (!labels.length) return renderMixed(p?.previous_roles) || "-";
+                          if (!labels.length)
+                            return <ShowMoreText text={renderMixed(p?.previous_roles)} maxChars={120} />;
                           const expanded = !!expandPreviousRoles[p._id];
                           const shown = expanded ? labels : labels.slice(0, 3);
                           return (
@@ -1123,7 +1121,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                           );
                         }
 
-                        return renderMixed(p?.previous_roles) || "-";
+                        return <ShowMoreText text={renderMixed(p?.previous_roles)} maxChars={120} />;
                       })()}
                     </td>
                     <td
@@ -1183,7 +1181,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                           );
                         }
 
-                        return renderMixed(filteredEducation) || "-";
+                        return <ShowMoreText text={renderMixed(filteredEducation)} maxChars={120} />;
                       })()}
                     </td>
                     <td
@@ -1195,7 +1193,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                           const all = p.skills;
                           const shown = expanded ? all : all.slice(0, 8);
                           return (
-                            <div className="flex flex-wrap gap-1 items-center">
+                            <div className="flex flex-wrap gap-1 max-w-[480px] items-center">
                               {shown.map((s, si) => (
                                 <span
                                   key={si}
@@ -1227,7 +1225,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                           );
                         })()
                       ) : (
-                        p?.skills || "-"
+                        <ShowMoreText text={p?.skills} maxChars={80} />
                       )}
                     </td>
                     <td className={`${density === "compact" ? "px-2 py-1" : "px-3 py-2"} border-b align-top`}>
@@ -1257,24 +1255,6 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                           >
                             Download
                           </a>
-                          <button
-                            onClick={() => deleteResume(p._id)}
-                            disabled={deletingId === String(p._id)}
-                            className={`inline-flex items-center gap-1 text-xs ${
-                              deletingId === String(p._id)
-                                ? "text-destructive/60 cursor-wait"
-                                : "text-destructive hover:underline"
-                            }`}
-                            title="Delete resume from Cloudinary"
-                          >
-                            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5">
-                              <path
-                                fill="currentColor"
-                                d="M9 3v1H4v2h16V4h-5V3H9m-3 6h12l-1 12H7L6 9Z"
-                              />
-                            </svg>
-                            {deletingId === String(p._id) ? "Deleting…" : "Delete"}
-                          </button>
                         </div>
                       ) : (
                         <span className="text-xs text-muted">—</span>
@@ -1298,6 +1278,12 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                         }
 
                         const lastRemark = last?.remark || "";
+                        const isLongRemark = lastRemark.length > 120;
+                        const expandedRemark = !!expandLastRemark[p._id];
+                        const remarkText =
+                          !isLongRemark || expandedRemark
+                            ? lastRemark
+                            : `${lastRemark.slice(0, 120).trimEnd()}…`;
 
                         return (
                           <div className="flex flex-col gap-1">
@@ -1364,8 +1350,23 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                               className="w-full max-w-xs text-xs px-2 py-1 border rounded bg-background"
                             />
                             {lastRemark && (
-                              <div className="text-[11px] text-muted mt-0.5 max-w-xs truncate" title={lastRemark}>
-                                Last remark: <span className="font-medium text-foreground">{lastRemark}</span>
+                              <div className="text-[11px] text-muted mt-0.5 max-w-xs" title={lastRemark}>
+                                Last remark:{" "}
+                                <span className="font-medium text-foreground">{remarkText}</span>
+                                {isLongRemark && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setExpandLastRemark((prev) => ({
+                                        ...prev,
+                                        [p._id]: !prev[p._id],
+                                      }))
+                                    }
+                                    className="ml-1 text-[11px] font-medium text-primary hover:underline"
+                                  >
+                                    {expandedRemark ? "Show less" : "Show more"}
+                                  </button>
+                                )}
                               </div>
                             )}
                           </div>

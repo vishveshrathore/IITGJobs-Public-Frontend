@@ -20,6 +20,7 @@ const navConfig = [
     dropdown: [
       { label: "Post Resume", href: "/application-form" },
       { label: "Job Openings", href: "/job-openings" },
+      { label: "Careers", href: "/local-hiring" },
     ],
   },
   {

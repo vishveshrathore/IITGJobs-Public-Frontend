@@ -25,6 +25,7 @@ const SearchProfiles = lazy(() => import("./components/Public/other/SearchProfil
 const Recruitment = lazy(() => import("./pages/Recruitment/Recruitment"));
 const JobDetails = lazy(() => import("./pages/Recruitment/JobDetails"));
 const JobOpenings = lazy(() => import("./pages/Recruitment/JobOpenings"));
+const LocalHiringJobs = lazy(() => import("./pages/Recruitment/LocalHiringJobs"));
 
 function App() {
   const location = useLocation();
@@ -215,6 +216,12 @@ function App() {
           "Browse active job openings and apply via IITG Jobs' secure application form.",
         robots: "index,follow",
       },
+      "/local-hiring": {
+        title: "Local Hiring Positions | IITG Jobs",
+        description:
+          "Explore active local hiring positions and apply directly with your resume.",
+        robots: "index,follow",
+      },
       "/our-team": {
         title: "Our Team | IITG Jobs",
         description:
@@ -258,6 +265,7 @@ function App() {
           <Route path="/post-job" element={<PageTransition><PostJob /></PageTransition>} />
           <Route path="/application-form" element={<PageTransition><ApplicationForm /></PageTransition>} />
           <Route path="/job-openings" element={<PageTransition><JobOpenings /></PageTransition>} />
+          <Route path="/local-hiring" element={<PageTransition><LocalHiringJobs /></PageTransition>} />
           <Route path="/our-team" element={<PageTransition><OurTeam /></PageTransition>} />
           {/* Protected: corporate only */}
           <Route element={<ProtectedRoute requireCorporate corporateRedirectTo="/employer-login" />}> 
