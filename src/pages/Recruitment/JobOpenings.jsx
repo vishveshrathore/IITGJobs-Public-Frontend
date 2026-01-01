@@ -68,6 +68,53 @@ const JobOpenings = () => {
     return job?.jobLocation || "-";
   };
 
+  const buildJobOpeningShareMailto = (job) => {
+    if (!job) return "mailto:";
+
+    const title = job.position || "Job opening";
+    const orgPart = job.organisationName ? ` at ${job.organisationName}` : "";
+    const loc = getLocationDisplay(job);
+    const locSuffix = loc && loc !== "-" ? ` - ${loc}` : "";
+    const subject = `Job opportunity: ${title}${orgPart}${locSuffix}`;
+
+    const experienceRange = (job.expFrom || job.expTo)
+      ? [job.expFrom, job.expTo].filter(Boolean).join(" – ")
+      : null;
+
+    const lines = [
+      "Dear Candidate,",
+      "",
+      "I am sharing details of a current job opening published via IITG Jobs.",
+      "",
+      `Position: ${job.position || "-"}`,
+      job.organisationName ? `Organisation: ${job.organisationName}` : null,
+      loc && loc !== "-" ? `Location: ${loc}` : null,
+      experienceRange ? `Experience Required: ${experienceRange} years` : null,
+      job.level ? `Level: ${job.level}` : null,
+      job.jobType ? `Type: ${job.jobType}` : null,
+      job.department ? `Department: ${job.department}` : null,
+      job.positionsCount != null ? `Openings: ${job.positionsCount}` : null,
+      job.ctcUpper != null ? `CTC (upper range): ${formatCTC(job.ctcUpper)}` : null,
+      "",
+      job.jobDescription ? "Job Description (summary):" : null,
+      job.jobDescription ? job.jobDescription : null,
+      job.jobDescriptionFileUrl ? "" : null,
+      job.jobDescriptionFileUrl ? `Full Job Description (link): ${job.jobDescriptionFileUrl}` : null,
+      "",
+      job.createdAt ? `Posted on: ${new Date(job.createdAt).toLocaleDateString()}` : null,
+      "",
+      "You can apply for this role directly through IITG Jobs.",
+      "",
+      "Best regards,",
+      "IITG Jobs Recruitment Team",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const base = "https://mail.google.com/mail/?view=cm&fs=1";
+    return `${base}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines)}`;
+  };
+
   const sortedJobs = useMemo(
     () => [...jobs].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)),
     [jobs]
@@ -272,6 +319,12 @@ const JobOpenings = () => {
                   >
                     Apply Now
                   </button>
+                  <a
+                    href={buildJobOpeningShareMailto(job)}
+                    className="btn btn-secondary text-sm"
+                  >
+                    Share via Email
+                  </a>
                 </div>
               </div>
             ))}

@@ -4,6 +4,41 @@ import Navbar from "../../components/Public/Landing Page/Navbar";
 import Footer from "../../components/Public/Landing Page/Footer";
 import { BASE_URL } from "../../config";
 
+const buildLocalHiringShareMailto = (position) => {
+  if (!position) return "mailto:";
+
+  const title = position.name || "Local hiring role";
+  const locationSuffix = position.location ? ` - ${position.location}` : "";
+  const subject = `Job opportunity: ${title}${locationSuffix}`;
+
+  const lines = [
+    "Dear Candidate,",
+    "",
+    "I am sharing details of a current local hiring opportunity published via IITG Jobs.",
+    "",
+    `Position: ${position.name || "-"}`,
+    position.location ? `Location: ${position.location}` : null,
+    position.requiredExp ? `Experience Required: ${position.requiredExp}` : null,
+    position.ctcRange ? `Compensation Range: ${position.ctcRange}` : null,
+    position.requiredKeySkills ? `Key Skills: ${position.requiredKeySkills}` : null,
+    "",
+    position.jdText ? "Job Description (summary):" : null,
+    position.jdText ? position.jdText : null,
+    position.jdFileUrl ? "" : null,
+    position.jdFileUrl ? `Full Job Description (link): ${position.jdFileUrl}` : null,
+    "",
+    "You can apply for this role directly through IITG Jobs.",
+    "",
+    "Best regards,",
+    "IITG Jobs Recruitment Team",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const base = "https://mail.google.com/mail/?view=cm&fs=1";
+  return `${base}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines)}`;
+};
+
 const LocalHiringJobs = () => {
   const [positions, setPositions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -216,6 +251,12 @@ const LocalHiringJobs = () => {
                     >
                       Apply Now
                     </button>
+                    <a
+                      href={buildLocalHiringShareMailto(p)}
+                      className="btn btn-secondary text-sm"
+                    >
+                      Share via Email
+                    </a>
                   </div>
                 </div>
               );
