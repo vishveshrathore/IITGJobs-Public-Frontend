@@ -66,18 +66,30 @@ const getColumnText = (p, key) => {
   }
 };
 
-const ShowMoreText = ({ text, maxChars = 120, className = "" }) => {
+const ShowMoreText = ({ text, maxChars = 120, maxWords = 15, className = "" }) => {
   const [expanded, setExpanded] = React.useState(false);
   const str = String(text || "").trim();
   if (!str) return "-";
-  if (str.length <= maxChars) {
+
+  const words = str.split(/\s+/).filter(Boolean);
+  const useWordLimit = typeof maxWords === "number" && maxWords > 0;
+  const isLong = useWordLimit ? words.length > maxWords : str.length > maxChars;
+
+  if (!isLong) {
     return <span className={className}>{str}</span>;
   }
-  const display = expanded ? str : `${str.slice(0, maxChars).trimEnd()}…`;
+
+  const display = expanded
+    ? str
+    : useWordLimit
+    ? `${words.slice(0, maxWords).join(" ")}…`
+    : `${str.slice(0, maxChars).trimEnd()}…`;
+
   const toggle = (e) => {
     e.stopPropagation();
     setExpanded((prev) => !prev);
   };
+
   return (
     <span className={className}>
       {display}{" "}
@@ -373,6 +385,8 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
   const [expandPreviousRoles, setExpandPreviousRoles] = useState({});
   const [expandEducation, setExpandEducation] = useState({});
   const [expandLastRemark, setExpandLastRemark] = useState({});
+  const [sendingIITGTrigger, setSendingIITGTrigger] = useState(false);
+  const [sendingFirstLineupTrigger, setSendingFirstLineupTrigger] = useState(false);
 
   const companyName = useMemo(() => {
     if (!job) return "-";
@@ -417,6 +431,38 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
       setError(e?.response?.data?.message || e?.message || "Failed to load candidates");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const triggerFirstLineupIITG = async () => {
+    if (!job?._id) {
+      setToast({ visible: true, message: 'Missing job information for trigger.', type: 'error' });
+      setTimeout(() => setToast({ visible: false, message: '', type: 'error' }), 2500);
+      return;
+    }
+    try {
+      setSendingFirstLineupTrigger(true);
+      const token = getToken?.();
+      const { data } = await axios.post(
+        `${BASE_URL}/api/recruitment/post-job/${job._id}/trigger-first-lineup`,
+        {},
+        {
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        }
+      );
+      const msg = data?.message || 'Notification sent to IITG.';
+      setToast({ visible: true, message: msg, type: 'success' });
+      setTimeout(() => setToast({ visible: false, message: '', type: 'success' }), 2500);
+    } catch (e) {
+      setToast({
+        visible: true,
+        message: e?.response?.data?.message || e?.message || 'Failed to send notification',
+        type: 'error',
+      });
+      setTimeout(() => setToast({ visible: false, message: '', type: 'error' }), 2500);
+    } finally {
+      setSendingFirstLineupTrigger(false);
     }
   };
 
@@ -756,6 +802,38 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
 
   const hasError = !!error;
 
+  const triggerToIITG = async () => {
+    if (!job?._id) {
+      setToast({ visible: true, message: 'Missing job information for trigger.', type: 'error' });
+      setTimeout(() => setToast({ visible: false, message: '', type: 'error' }), 2500);
+      return;
+    }
+    try {
+      setSendingIITGTrigger(true);
+      const token = getToken?.();
+      const { data } = await axios.post(
+        `${BASE_URL}/api/recruitment/post-job/${job._id}/trigger-iitg`,
+        {},
+        {
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        }
+      );
+      const msg = data?.message || 'Notification sent to IITG.';
+      setToast({ visible: true, message: msg, type: 'success' });
+      setTimeout(() => setToast({ visible: false, message: '', type: 'success' }), 2500);
+    } catch (e) {
+      setToast({
+        visible: true,
+        message: e?.response?.data?.message || e?.message || 'Failed to send notification',
+        type: 'error',
+      });
+      setTimeout(() => setToast({ visible: false, message: '', type: 'error' }), 2500);
+    } finally {
+      setSendingIITGTrigger(false);
+    }
+  };
+
   return (
     <div className="relative space-y-4 text-sm text-foreground w-full overflow-x-hidden">
       {toast.visible && (
@@ -812,7 +890,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {[["Location", filterLocation, setFilterLocation], ["Skill", filterSkill, setFilterSkill]].map(
+            {[['Location', filterLocation, setFilterLocation], ['Skill', filterSkill, setFilterSkill]].map(
               ([label, value, setter]) => (
                 <div
                   key={label}
@@ -839,24 +917,50 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
             >
               Reset
             </button>
-            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px]">
-              {["Comfort", "Compact"].map((mode) => {
-                const key = mode.toLowerCase();
-                const active = density === key;
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setDensity(key)}
-                    className={`rounded-full px-2 py-0.5 tracking-[0.25em] transition ${
-                      active ? "bg-white/20 text-white shadow" : "text-muted hover:text-foreground/80"
-                    }`}
-                  >
-                    {mode}
-                  </button>
-                );
-              })}
-            </div>
+            {stageKey === "BooleanDataSheet(C)" && (
+              <button
+                type="button"
+                onClick={triggerToIITG}
+                disabled={sendingIITGTrigger}
+                className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-white shadow-sm transition ${
+                  sendingIITGTrigger
+                    ? 'bg-gradient-to-r from-sky-500/60 to-indigo-500/60 border-sky-600 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-sky-500 to-indigo-500 border-sky-600 hover:from-sky-600 hover:to-indigo-600'
+                }`}
+              >
+                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/15">
+                  <svg viewBox="0 0 24 24" className="h-3 w-3">
+                    <path
+                      fill="currentColor"
+                      d="M5 12h9.59l-3.3-3.29L12 8l5 5-5 5-0.71-0.71L14.59 13H5z"
+                    />
+                  </svg>
+                </span>
+                <span>{sendingIITGTrigger ? 'Sending…' : 'Update to IITG'}</span>
+              </button>
+            )}
+            {stageKey === "OfficeInterview" && (
+              <button
+                type="button"
+                onClick={triggerFirstLineupIITG}
+                disabled={sendingFirstLineupTrigger}
+                className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-white shadow-sm transition ${
+                  sendingFirstLineupTrigger
+                    ? 'bg-gradient-to-r from-sky-500/60 to-indigo-500/60 border-sky-600 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-sky-500 to-indigo-500 border-sky-600 hover:from-sky-600 hover:to-indigo-600'
+                }`}
+              >
+                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/15">
+                  <svg viewBox="0 0 24 24" className="h-3 w-3">
+                    <path
+                      fill="currentColor"
+                      d="M5 12h9.59l-3.3-3.29L12 8l5 5-5 5-0.71-0.71L14.59 13H5z"
+                    />
+                  </svg>
+                </span>
+                <span>{sendingFirstLineupTrigger ? 'Sending…' : 'Update to IITG'}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -1056,7 +1160,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                       {p?.ctc || "-"}
                     </td>
                     <td className={`${density === "compact" ? "px-2 py-1" : "px-3 py-2"} border-b align-top`}>
-                      <ShowMoreText text={p?.location} maxChars={60} />
+                      <ShowMoreText text={p?.location} maxWords={15} />
                     </td>
                     <td className={`${density === "compact" ? "px-2 py-1" : "px-3 py-2"} border-b align-top`}>
                       <span className="px-1.5 py-0.5 rounded text-[10px] border bg-surface-2 text-foreground/80 border-border">
@@ -1093,7 +1197,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                             .filter(Boolean);
 
                           if (!labels.length)
-                            return <ShowMoreText text={renderMixed(p?.previous_roles)} maxChars={120} />;
+                            return <ShowMoreText text={renderMixed(p?.previous_roles)} maxWords={15} />;
                           const expanded = !!expandPreviousRoles[p._id];
                           const shown = expanded ? labels : labels.slice(0, 3);
                           return (
@@ -1121,7 +1225,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                           );
                         }
 
-                        return <ShowMoreText text={renderMixed(p?.previous_roles)} maxChars={120} />;
+                        return <ShowMoreText text={renderMixed(p?.previous_roles)} maxWords={15} />;
                       })()}
                     </td>
                     <td
@@ -1181,7 +1285,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                           );
                         }
 
-                        return <ShowMoreText text={renderMixed(filteredEducation)} maxChars={120} />;
+                        return <ShowMoreText text={renderMixed(filteredEducation)} maxWords={15} />;
                       })()}
                     </td>
                     <td
@@ -1225,7 +1329,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                           );
                         })()
                       ) : (
-                        <ShowMoreText text={p?.skills} maxChars={80} />
+                        <ShowMoreText text={p?.skills} maxWords={15} />
                       )}
                     </td>
                     <td className={`${density === "compact" ? "px-2 py-1" : "px-3 py-2"} border-b align-top`}>
@@ -1278,12 +1382,13 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                         }
 
                         const lastRemark = last?.remark || "";
-                        const isLongRemark = lastRemark.length > 120;
+                        const remarkWords = String(lastRemark || "").trim().split(/\s+/).filter(Boolean);
+                        const isLongRemark = remarkWords.length > 15;
                         const expandedRemark = !!expandLastRemark[p._id];
                         const remarkText =
                           !isLongRemark || expandedRemark
                             ? lastRemark
-                            : `${lastRemark.slice(0, 120).trimEnd()}…`;
+                            : `${remarkWords.slice(0, 15).join(" ")}…`;
 
                         return (
                           <div className="flex flex-col gap-1">
