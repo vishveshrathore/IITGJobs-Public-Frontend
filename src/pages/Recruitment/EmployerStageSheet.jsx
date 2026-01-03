@@ -785,6 +785,21 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
       }
       await refresh();
       clearSelection();
+      if (ok > 0) {
+        if (stageKey === "BooleanDataSheet(C)") {
+          try {
+            await triggerToIITG();
+          } catch (_) {
+            // triggerToIITG already handles its own error toast
+          }
+        } else if (stageKey === "OfficeInterview") {
+          try {
+            await triggerFirstLineupIITG();
+          } catch (_) {
+            // triggerFirstLineupIITG already handles its own error toast
+          }
+        }
+      }
       setToast({
         visible: true,
         message: `Moved: ${ok} · Skipped: ${skipped} · Failed: ${fail}`,
