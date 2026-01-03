@@ -932,50 +932,6 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
             >
               Reset
             </button>
-            {stageKey === "BooleanDataSheet(C)" && (
-              <button
-                type="button"
-                onClick={triggerToIITG}
-                disabled={sendingIITGTrigger}
-                className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-white shadow-sm transition ${
-                  sendingIITGTrigger
-                    ? 'bg-gradient-to-r from-sky-500/60 to-indigo-500/60 border-sky-600 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-sky-500 to-indigo-500 border-sky-600 hover:from-sky-600 hover:to-indigo-600'
-                }`}
-              >
-                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/15">
-                  <svg viewBox="0 0 24 24" className="h-3 w-3">
-                    <path
-                      fill="currentColor"
-                      d="M5 12h9.59l-3.3-3.29L12 8l5 5-5 5-0.71-0.71L14.59 13H5z"
-                    />
-                  </svg>
-                </span>
-                <span>{sendingIITGTrigger ? 'Sending…' : 'Update to IITG'}</span>
-              </button>
-            )}
-            {stageKey === "OfficeInterview" && (
-              <button
-                type="button"
-                onClick={triggerFirstLineupIITG}
-                disabled={sendingFirstLineupTrigger}
-                className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-white shadow-sm transition ${
-                  sendingFirstLineupTrigger
-                    ? 'bg-gradient-to-r from-sky-500/60 to-indigo-500/60 border-sky-600 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-sky-500 to-indigo-500 border-sky-600 hover:from-sky-600 hover:to-indigo-600'
-                }`}
-              >
-                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/15">
-                  <svg viewBox="0 0 24 24" className="h-3 w-3">
-                    <path
-                      fill="currentColor"
-                      d="M5 12h9.59l-3.3-3.29L12 8l5 5-5 5-0.71-0.71L14.59 13H5z"
-                    />
-                  </svg>
-                </span>
-                <span>{sendingFirstLineupTrigger ? 'Sending…' : 'Update to IITG'}</span>
-              </button>
-            )}
           </div>
         </div>
       </div>
