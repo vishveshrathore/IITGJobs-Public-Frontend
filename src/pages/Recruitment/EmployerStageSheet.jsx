@@ -1485,7 +1485,7 @@ const EmployerStageSheet = ({ job, stageKey, title }) => {
                       d="M5 12h12.17l-4.59-4.59L13 6l7 7-7 7-1.41-1.41L17.17 14H5z"
                     />
                   </svg>
-                  {bulkSaving ? "Moving…" : "Move Selected (YES)"}
+                  {bulkSaving ? "Sending..." : "Send to QC"}
                 </button>
                 <button
                   type="button"
