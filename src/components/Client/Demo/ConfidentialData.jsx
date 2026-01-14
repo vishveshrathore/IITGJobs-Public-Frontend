@@ -20,6 +20,7 @@ const ConfidentialData = () => {
   const [companiesLoading, setCompaniesLoading] = useState(false);
   const [companyId, setCompanyId] = useState("");
   const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
@@ -173,6 +174,11 @@ const ConfidentialData = () => {
     const view = path.includes('/client/demo') ? 'demo' : 'service';
     setCurrentView(view);
     setShowDates(!!withDates);
+    // reset OTP flow each time user starts a new access flow
+    setOtpSent(false);
+    setOtp("");
+    setMessage("");
+
     if (verified) {
       // Use current company if chosen, else try last company
       const lastKey = `public_access_last_company:${userEmail}`;
@@ -201,8 +207,10 @@ const ConfidentialData = () => {
       setMessage("");
       if (!userEmail) throw new Error("No email found in session. Please login.");
       await axios.post(`${BASE_URL}/api/recruitment/public/send-otp`, { email: userEmail, companyId });
-      setMessage("Submit OTP to see demo data");
+      setMessage("OTP sent. Please enter it below to show the data.");
+      setOtpSent(true);
       toast.success('OTP sent');
+
     } catch (e) {
       const status = e?.response?.status;
       const msg = e?.response?.data?.message || e?.message || "Failed to send OTP";
@@ -356,55 +364,63 @@ const ConfidentialData = () => {
             <h2 className="text-lg font-semibold text-white">Select Company & Verify Email</h2>
             <p className="mt-1 text-xs text-slate-400">Choose your company and verify via OTP to access Demo/Service.</p>
             <div className="mt-5 space-y-4">
-              <div className="relative">
-                <label className="block text-xs mb-1 text-slate-300">Company</label>
-                <input
-                  type="text"
-                  value={companySearch}
-                  onChange={(e) => {
-                    setCompanySearch(e.target.value);
-                    setCompanyDropdownOpen(true);
-                  }}
-                  onFocus={() => setCompanyDropdownOpen(true)}
-                  placeholder={companiesLoading ? 'Loading companies…' : "Start typing to search companies"}
-                  className="w-full text-sm px-3 py-2 rounded border border-slate-600 bg-slate-900 text-slate-200 placeholder-slate-500 focus:ring-blue-500 focus:border-blue-500"
-                />
-                {companyDropdownOpen && filteredCompanies.length > 0 && (
-                  <div className="absolute z-10 mt-1 max-h-52 w-full overflow-auto rounded-md border border-slate-700 bg-slate-900 shadow-lg">
-                    {filteredCompanies.map((c) => {
-                      const name = c.CompanyName || c.companyName || c.name || 'Unnamed Company';
-                      return (
-                        <button
-                          key={c._id}
-                          type="button"
-                          onClick={() => {
-                            setCompanyId(c._id);
-                            setCompanySearch(name);
-                            setCompanyDropdownOpen(false);
-                          }}
-                          className="flex w-full items-center px-3 py-2 text-left text-sm text-slate-100 hover:bg-slate-800"
-                        >
-                          {name}
-                        </button>
-                      );
-                    })}
+              {(globalVerified || !otpSent) && (
+                <div className="space-y-2">
+                  <label className="block text-xs mb-1 text-slate-300">Company</label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        value={companySearch}
+                        onChange={(e) => {
+                          setCompanySearch(e.target.value);
+                          setCompanyDropdownOpen(true);
+                        }}
+                        onFocus={() => setCompanyDropdownOpen(true)}
+                        placeholder={companiesLoading ? 'Loading companies…' : "Start typing to search companies"}
+                        className="w-full text-sm px-3 py-2 rounded border border-slate-600 bg-slate-900 text-slate-200 placeholder-slate-500 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      {companyDropdownOpen && filteredCompanies.length > 0 && (
+                        <div className="absolute z-10 mt-1 max-h-52 w-full overflow-auto rounded-md border border-slate-700 bg-slate-900 shadow-lg">
+                          {filteredCompanies.map((c) => {
+                            const name = c.CompanyName || c.companyName || c.name || 'Unnamed Company';
+                            return (
+                              <button
+                                key={c._id}
+                                type="button"
+                                onClick={() => {
+                                  setCompanyId(c._id);
+                                  setCompanySearch(name);
+                                  setCompanyDropdownOpen(false);
+                                }}
+                                className="flex w-full items-center px-3 py-2 text-left text-sm text-slate-100 hover:bg-slate-800"
+                              >
+                                {name}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {companyDropdownOpen && !companiesLoading && filteredCompanies.length === 0 && (
+                        <div className="absolute z-10 mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-400">
+                          No companies found.
+                        </div>
+                      )}
+                    </div>
+                    {!globalVerified && !otpSent && (
+                      <button
+                        onClick={sendOtp}
+                        disabled={!companyId || !userEmail || sending}
+                        className="btn btn-primary text-sm whitespace-nowrap"
+                      >
+                        {sending ? 'Showing...' : 'Show Data'}
+                      </button>
+                    )}
                   </div>
-                )}
-                {companyDropdownOpen && !companiesLoading && filteredCompanies.length === 0 && (
-                  <div className="absolute z-10 mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-400">
-                    No companies found.
-                  </div>
-                )}
-              </div>
-              {!globalVerified && (
+                </div>
+              )}
+              {!globalVerified && otpSent && (
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={sendOtp}
-                    disabled={!companyId || !userEmail || sending}
-                    className="btn btn-primary text-sm"
-                  >
-                    {sending ? 'Sending…' : 'Send OTP'}
-                  </button>
                   <input
                     type="text"
                     value={otp}
@@ -429,6 +445,8 @@ const ConfidentialData = () => {
                   setOpen(false);
                   setCompanySearch("");
                   setCompanyDropdownOpen(false);
+                  setOtpSent(false);
+                  setOtp("");
                 }}
                 className="btn btn-secondary text-sm"
               >
